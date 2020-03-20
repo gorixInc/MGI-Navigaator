@@ -22,6 +22,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -58,10 +59,10 @@
     <option name="LAST_COMMIT_MESSAGE" value="Maven project?" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="568" y="116" key="CommitChangelistDialog2" timestamp="1584713805062">
+    <state x="568" y="116" key="CommitChangelistDialog2" timestamp="1584713884860">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="568" y="116" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584713805062" />
+    <state x="568" y="116" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584713884860" />
     <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1584713678453">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
