@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8a6bfd70-2fb1-489c-b2a7-97a22ef64578" name="Default Changelist" comment="" />
+    <list default="true" id="8a6bfd70-2fb1-489c-b2a7-97a22ef64578" name="Default Changelist" comment="Maven project?">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -19,6 +23,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../WebsiteProject" />
@@ -33,17 +38,41 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1584713272615</updated>
-      <workItem from="1584713275414" duration="302000" />
+      <workItem from="1584713275414" duration="545000" />
     </task>
+    <task id="LOCAL-00001" summary="Maven project?">
+      <created>1584713600100</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1584713600100</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Maven project?" />
+    <option name="LAST_COMMIT_MESSAGE" value="Maven project?" />
+  </component>
   <component name="WindowStateProjectService">
+    <state x="568" y="116" key="CommitChangelistDialog2" timestamp="1584713805062">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="568" y="116" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1584713805062" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1584713678453">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1584713678453" />
     <state x="655" y="344" key="com.intellij.ide.util.TipDialog" timestamp="1584713276158">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="655" y="344" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1584713276158" />
+    <state x="671" y="311" key="git4idea.merge.GitPullDialog" timestamp="1584713691238">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="671" y="311" key="git4idea.merge.GitPullDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1584713691238" />
   </component>
 </project>
