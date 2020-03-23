@@ -1,3 +1,6 @@
+/**
+ * Contains coordinate data for each vertex;
+ */
 public class RoadVertex extends Vertex {
     double posX;
     double posY;
