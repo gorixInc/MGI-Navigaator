@@ -28,5 +28,6 @@ public class GraphTest {
 
         r = dijkstra.getRoute(E,A);
         System.out.println(r.toString());
+
     }
 }
