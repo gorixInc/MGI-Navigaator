@@ -36,6 +36,16 @@ public class Graph {
         }
     }
 
+    /**
+     * addEdge for RoadVertices, calculates weight from coordinates.
+     * @param origin
+     * @param destination
+     */
+    void addEdge(RoadVertex origin, RoadVertex destination){
+        double weight = Math.sqrt(Math.pow(Math.abs(origin.posY - destination.posY), 2) + Math.pow(Math.abs(origin.posX - destination.posX), 2));
+        addEdge(origin, destination, weight);
+    }
+
     public HashMap<Vertex, LinkedList<Edge>> getAdjacencyMap() {
         return adjacencyMap;
     }

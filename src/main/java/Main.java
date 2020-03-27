@@ -20,14 +20,11 @@ import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 public class Main extends Application {
 
-    ArrayList<Circle> vertexesGraphics = new ArrayList<>();
     ArrayList<Line> edgesGraphics = new ArrayList<>();
-    ArrayList<RoadVertex> vertexes;
+    ArrayList<GraphicalVertex> graphicalVertices = new ArrayList<>();
     Graph graph;
     Dijkstra dijkstra;
 
@@ -67,10 +64,10 @@ public class Main extends Application {
         gc.setFill(Color.WHEAT);
         gc.fillRect(0, 0, 600, 500);
 
-        Group group = new Group(canvas);
+        Group kaart = new Group(canvas);
 
         root.getChildren().add(nupud);
-        root.getChildren().add(group);
+        root.getChildren().add(kaart);
 
         Scene scene1 = new Scene(root);
 
@@ -84,26 +81,24 @@ public class Main extends Application {
             EventHandler<MouseEvent> findDistance = new EventHandler<MouseEvent>() {
                 boolean esimene = true;
                 Vertex esimeneClick;
-                Vertex teineClick;
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                        group.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
+                        kaart.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
                     } else {
                         Point2D point = new Point2D(mouseEvent.getX(), mouseEvent.getY());
                         if (esimene) {
-                            for (Circle vertexesGraphic : vertexesGraphics) {
-                                if (vertexesGraphic.contains(point)) {
-                                    esimeneClick = vertexes.get(vertexesGraphics.indexOf(vertexesGraphic));
+                            for (GraphicalVertex graphicalVertex : graphicalVertices) {
+                                if (graphicalVertex.graphics.contains(point)){
+                                    esimeneClick = graphicalVertex;
                                     esimene = false;
                                     break;
                                 }
                             }
                         } else {
-                            for (Circle vertexesGraphic : vertexesGraphics) {
-                                if(vertexesGraphic.contains(point)){
-                                    teineClick = vertexes.get(vertexesGraphics.indexOf(vertexesGraphic));
-                                    System.out.println(dijkstra.getRoute(esimeneClick, teineClick));
+                            for (GraphicalVertex graphicalVertex : graphicalVertices) {
+                                if (graphicalVertex.graphics.contains(point)){
+                                    System.out.println(dijkstra.getRoute(esimeneClick, graphicalVertex));
                                     esimene = true;
                                     break;
                                 }
@@ -112,53 +107,52 @@ public class Main extends Application {
                     }
                 }
             };
-            group.addEventFilter(MouseEvent.MOUSE_CLICKED, findDistance);
+            kaart.addEventFilter(MouseEvent.MOUSE_CLICKED, findDistance);
         });
 
         nupp2.setOnAction(e -> {
-            HashMap<Vertex, LinkedList<Edge>> adjacencyMap = graph.getAdjacencyMap();
-            for (RoadVertex vertex : vertexes) {
-                drawVertex(vertex.posX, vertex.posY, group);
-                for (Edge edge : adjacencyMap.get(vertex)) {
-                    drawEdge(vertex.posX, vertex.posY, ((RoadVertex)(edge.destination)).posX, ((RoadVertex)(edge.destination)).posY, group);
-                }
-            }
+            clearCanvas(kaart);
+            populateCanvas(kaart);
             System.out.println("Teine Töötab");
         });
 
         nupp3.setOnAction(e -> {
+            clearCanvas(kaart);
+            //vertexesGraphics.clear();
+            edgesGraphics.clear();
             graph = new Graph();
-            vertexes = new ArrayList<>();
+            //vertexes = new ArrayList<>();
+            //vertexesGraphics = new ArrayList<>();
+            graphicalVertices = new ArrayList<>();
 
             EventHandler<MouseEvent> addEdges = new EventHandler<MouseEvent>() {
                 boolean esimene = true;
-                Circle esimeneClick;
+                GraphicalVertex esimeneClick;
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                        group.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
+                        kaart.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
                         System.out.println(graph.toString());
                         System.out.println(graph.getAdjacencyMap());
                     } else {
                         Point2D point = new Point2D(mouseEvent.getX(), mouseEvent.getY());
                         if (esimene) {
-                            for (Circle vertexesGraphic : vertexesGraphics) {
-                                if (vertexesGraphic.contains(point)) {
-                                    esimeneClick = vertexesGraphic;
+                            for (GraphicalVertex graphicalVertex : graphicalVertices) {
+                                if(graphicalVertex.graphics.contains(point)){
+                                    esimeneClick = graphicalVertex;
                                     esimene = false;
                                     break;
                                 }
                             }
                         } else {
-                            for (Circle vertexesGraphic : vertexesGraphics) {
-                                if(vertexesGraphic.contains(point) && vertexesGraphic != esimeneClick){
-                                    double esimeneX = esimeneClick.getCenterX();
-                                    double esimeneY = esimeneClick.getCenterY();
-                                    double teineX = vertexesGraphic.getCenterX();
-                                    double teineY = vertexesGraphic.getCenterY();
-                                    double weight = calculateWeight(esimeneX, esimeneY, teineX, teineY);
-                                    graph.addEdge(vertexes.get(vertexesGraphics.indexOf(esimeneClick)), vertexes.get(vertexesGraphics.indexOf(vertexesGraphic)), weight);
-                                    drawEdge(esimeneX, esimeneY, teineX, teineY, group);
+                            for (GraphicalVertex graphicalVertex : graphicalVertices) {
+                                if (graphicalVertex.graphics.contains(point) && graphicalVertex != esimeneClick){
+                                    double esimeneX = esimeneClick.posX;
+                                    double esimeneY = esimeneClick.posY;
+                                    double teineX = graphicalVertex.posX;
+                                    double teineY = graphicalVertex.posY;
+                                    graph.addEdge(esimeneClick, graphicalVertex);
+                                    drawEdge(esimeneX, esimeneY, teineX, teineY, kaart);
                                     esimene = true;
                                     break;
                                 }
@@ -172,50 +166,63 @@ public class Main extends Application {
                 @Override
                 public void handle(MouseEvent event) {
                     if (event.getButton() == MouseButton.SECONDARY) {
-                        group.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
-                        group.addEventFilter(MouseEvent.MOUSE_CLICKED, addEdges);
-                        for (Vertex vertex : vertexes) {
-                            System.out.println(vertex);
+                        kaart.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
+                        kaart.addEventFilter(MouseEvent.MOUSE_CLICKED, addEdges);
+                        for (GraphicalVertex graphicalVertex : graphicalVertices) {
+                            System.out.println(graphicalVertex);
                         }
                     } else {
-                        RoadVertex vertex = new RoadVertex(vertexes.size() + 1, String.valueOf(vertexes.size() + 1), event.getX(), event.getY());
-                        vertexes.add(vertex);
-                        drawVertex(event.getX(), event.getY(), group);
+                        constructVertex(event.getX(), event.getY(), kaart);
                     }
                 }
             };
 
-            group.addEventFilter(MouseEvent.MOUSE_CLICKED, addVertexes);
+            kaart.addEventFilter(MouseEvent.MOUSE_CLICKED, addVertexes);
             System.out.println("Kolmas Töötab");
         });
 
         nupp4.setOnAction(e -> {
-            vertexesGraphics.forEach(vertex -> group.getChildren().remove(vertex));
-            vertexesGraphics.clear();
-            edgesGraphics.forEach(edge -> group.getChildren().remove(edge));
-            edgesGraphics.clear();
+            clearCanvas(kaart);
             System.out.println("Neljas Töötab");
         });
 
         stage.show();
     }
 
+    private void constructVertex(double x, double y, Group group){
+        Circle vertex = drawVertex(x, y);
+        if(vertex != null) {
+            GraphicalVertex gv = new GraphicalVertex(graphicalVertices.size(), String.valueOf(graphicalVertices.size()), x, y, vertex);
+            graphicalVertices.add(gv);
+            group.getChildren().add(gv.graphics);
+        }
+    }
 
-    private void drawVertex(double x, double y, Group group) {
+    private void clearCanvas(Group group){
+        graphicalVertices.forEach(vertex -> group.getChildren().remove(vertex.graphics));
+        edgesGraphics.forEach(edge -> group.getChildren().remove(edge));
+    }
+
+    private void populateCanvas(Group group){
+        graphicalVertices.forEach(vertex -> group.getChildren().add(vertex.graphics));
+        edgesGraphics.forEach(edge -> group.getChildren().add(edge));
+    }
+
+
+    private Circle drawVertex(double x, double y) {
         boolean olemas = false;
-        for (Circle vertex : vertexesGraphics) {
+        for (GraphicalVertex graphicalVertex : graphicalVertices) {
             Point2D point = new Point2D(x, y);
-            if (vertex.contains(point)) {
+            if (graphicalVertex.graphics.contains(point)){
                 System.out.println("Vajutasid koha peale");
                 olemas = true;
                 break;
             }
         }
         if (!olemas) {
-            Circle vertex = new Circle(x, y, 5);
-            vertexesGraphics.add(vertex);
-            group.getChildren().add(vertex);
+            return new Circle(x, y, 5);
         }
+        return null;
     }
 
     private void drawEdge(double x1, double y1, double x2, double y2, Group group){
@@ -225,12 +232,6 @@ public class Main extends Application {
         group.getChildren().add(edge);
     }
 
-    private double calculateWeight(double x1, double y1, double x2, double y2){
-        double yVahe = Math.abs(y1 - y2);
-        double xVahe = Math.abs(x1 - x2);
-        double weight = Math.sqrt(Math.pow(yVahe, 2) + Math.pow(xVahe, 2));
-        return weight;
-    }
 
 
     public static void main(String[] args) {
