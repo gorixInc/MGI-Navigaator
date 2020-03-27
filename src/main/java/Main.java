@@ -25,6 +25,8 @@ public class Main extends Application {
 
     ArrayList<Line> edgesGraphics = new ArrayList<>();
     ArrayList<GraphicalVertex> graphicalVertices = new ArrayList<>();
+    ArrayList<Line> routeEdges = new ArrayList<>();
+    ArrayList<Circle> routeVertices = new ArrayList<>();
     Graph graph;
     Dijkstra dijkstra;
 
@@ -76,6 +78,7 @@ public class Main extends Application {
         stage.setScene(scene1);
 
         nupp1.setOnAction(e -> {
+            kustutaTeekond(kaart);
             dijkstra = new Dijkstra(graph);
             System.out.println("Esimene töötab");
             EventHandler<MouseEvent> findDistance = new EventHandler<MouseEvent>() {
@@ -88,6 +91,7 @@ public class Main extends Application {
                     } else {
                         Point2D point = new Point2D(mouseEvent.getX(), mouseEvent.getY());
                         if (esimene) {
+                            kustutaTeekond(kaart);
                             for (GraphicalVertex graphicalVertex : graphicalVertices) {
                                 if (graphicalVertex.graphics.contains(point)){
                                     esimeneClick = graphicalVertex;
@@ -98,7 +102,9 @@ public class Main extends Application {
                         } else {
                             for (GraphicalVertex graphicalVertex : graphicalVertices) {
                                 if (graphicalVertex.graphics.contains(point)){
-                                    System.out.println(dijkstra.getRoute(esimeneClick, graphicalVertex));
+                                    Route teekond = dijkstra.getRoute(esimeneClick, graphicalVertex);
+                                    joonistaTeekond(teekond, kaart);
+                                    System.out.println(teekond);
                                     esimene = true;
                                     break;
                                 }
@@ -118,11 +124,8 @@ public class Main extends Application {
 
         nupp3.setOnAction(e -> {
             clearCanvas(kaart);
-            //vertexesGraphics.clear();
             edgesGraphics.clear();
             graph = new Graph();
-            //vertexes = new ArrayList<>();
-            //vertexesGraphics = new ArrayList<>();
             graphicalVertices = new ArrayList<>();
 
             EventHandler<MouseEvent> addEdges = new EventHandler<MouseEvent>() {
@@ -198,9 +201,37 @@ public class Main extends Application {
         }
     }
 
+    private void kustutaTeekond(Group group){
+        routeEdges.forEach(edge -> group.getChildren().remove(edge));
+        routeVertices.forEach(vertex -> group.getChildren().remove(vertex));
+        routeEdges.clear();
+        routeVertices.clear();
+    }
+
+    private void joonistaTeekond(Route route, Group group){
+        if (route.pathVertices == null) return;
+        for (Vertex pathVertex : route.pathVertices) {
+            for (GraphicalVertex graphicalVertex : graphicalVertices) {
+                if (graphicalVertex.index == pathVertex.index){
+                    Circle routeVertex = new Circle(graphicalVertex.posX, graphicalVertex.posY, 2.5);
+                    routeVertex.setFill(Color.RED);
+                    routeVertices.add(routeVertex);
+                }
+            }
+        }
+        for (int i = 0; i < routeVertices.size()-1; i++) {
+            Line routeEdge = new Line(routeVertices.get(i).getCenterX(), routeVertices.get(i).getCenterY(), routeVertices.get(i+1).getCenterX(), routeVertices.get(i+1).getCenterY());
+            routeEdge.setStroke(Color.RED);
+            routeEdges.add(routeEdge);
+        }
+        routeVertices.forEach(vertex -> group.getChildren().add(vertex));
+        routeEdges.forEach(edge -> group.getChildren().add(edge));
+    }
+
     private void clearCanvas(Group group){
         graphicalVertices.forEach(vertex -> group.getChildren().remove(vertex.graphics));
         edgesGraphics.forEach(edge -> group.getChildren().remove(edge));
+        kustutaTeekond(group);
     }
 
     private void populateCanvas(Group group){
