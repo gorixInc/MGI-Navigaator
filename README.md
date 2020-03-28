@@ -8,5 +8,5 @@ Kasutusjuhend:
 5) Peale teede listamist vajutada taas hiirel paremat klahvi.
 6) Kui nüüd vajutada nupule "New route" ning vajutada kahel ristmikul, siis joonistab programm nendevahelise lühima tee.
 7) Kui lühima tee otsimine on lõpetatud tuleb vajutada hiirel paremat klahvi.
-*8) Nupp "Clear" teeb pildi puhtaks.
-*9) Nupp "Load Map" joonistab eelmise kaardi uuesti.
+8) *Nupp "Clear" teeb pildi puhtaks.
+9) *Nupp "Load Map" joonistab eelmise kaardi uuesti.
