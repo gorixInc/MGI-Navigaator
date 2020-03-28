@@ -1,5 +1,7 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
+package Back_end;
+
+import Back_end.Vertex;
+
 import java.util.List;
 
 public class Route {
@@ -21,5 +23,13 @@ public class Route {
             sb.append(v.name).append(", ");
         }
         return sb.toString();
+    }
+
+    public List<Vertex> getPathVertices() {
+        return pathVertices;
+    }
+
+    public double getTotalWeight() {
+        return totalWeight;
     }
 }

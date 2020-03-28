@@ -1,11 +1,14 @@
+package Back_end;
+
 /**
  * Contains coordinate data for each vertex;
  */
 public class RoadVertex extends Vertex {
-    double posX;
-    double posY;
+    public double posX;
+    public double posY;
 
-    RoadVertex(int index, String name, double x, double y) {
+
+    public RoadVertex(int index, String name, double x, double y) {
         super(index, name);
         this.posX = x;
         this.posY = y;

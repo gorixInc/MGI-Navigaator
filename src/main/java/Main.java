@@ -1,4 +1,9 @@
 
+
+import java.util.ArrayList;
+
+import Back_end.*;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -18,8 +23,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
-
-import java.util.ArrayList;
 
 public class Main extends Application {
 
@@ -130,7 +133,7 @@ public class Main extends Application {
 
             EventHandler<MouseEvent> addEdges = new EventHandler<MouseEvent>() {
                 boolean esimene = true;
-                GraphicalVertex esimeneClick;
+                RoadVertex esimeneClick;
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     if (mouseEvent.getButton() == MouseButton.SECONDARY) {
@@ -209,8 +212,8 @@ public class Main extends Application {
     }
 
     private void joonistaTeekond(Route route, Group group){
-        if (route.pathVertices == null) return;
-        for (Vertex pathVertex : route.pathVertices) {
+        if (route.getPathVertices() == null) return;
+        for (Vertex pathVertex : route.getPathVertices()) {
             for (GraphicalVertex graphicalVertex : graphicalVertices) {
                 if (graphicalVertex.index == pathVertex.index){
                     Circle routeVertex = new Circle(graphicalVertex.posX, graphicalVertex.posY, 2.5);

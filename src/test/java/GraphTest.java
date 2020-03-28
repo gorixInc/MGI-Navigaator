@@ -1,3 +1,8 @@
+import Back_end.Dijkstra;
+import Back_end.Graph;
+import Back_end.Route;
+import Back_end.Vertex;
+
 public class GraphTest {
     public static void main(String[] args) {
         Graph graph = new Graph();
@@ -28,6 +33,9 @@ public class GraphTest {
 
         r = dijkstra.getRoute(E,A);
         System.out.println(r.toString());
+
+        graph.removeNonDirectedEdge(D, E);
+        System.out.println(graph.toString());
 
     }
 }

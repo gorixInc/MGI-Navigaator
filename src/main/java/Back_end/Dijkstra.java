@@ -1,9 +1,11 @@
+package Back_end;
+
 import java.util.*;
 
 public class Dijkstra {
     Graph graph;
     private HashMap<Vertex, LinkedList<Edge>> adjacencyMap;
-    private HashMap<Vertex, Edge> prevVertexAndDistance;
+    private HashMap<Vertex, PrevVertexAndDistance> prevVertexAndDistanceTable;
     List<Vertex> path;
     List<Vertex> unvisited;
     List<Vertex> allVertices;
@@ -13,30 +15,31 @@ public class Dijkstra {
         reset();
     }
 
+
     private void reset(){
         allVertices = graph.getVertices();
         adjacencyMap = graph.getAdjacencyMap();
-        path =  new ArrayList<Vertex>();
-        unvisited = new ArrayList<Vertex>();
+        path =  new ArrayList<>();
+        unvisited = new ArrayList<>();
         unvisited.addAll(allVertices);
-        prevVertexAndDistance =  new HashMap<Vertex, Edge>();
+        prevVertexAndDistanceTable =  new HashMap<>();
         for(Vertex v: allVertices){
-            prevVertexAndDistance.put(v, new Edge(v, Double.MAX_VALUE));
+            prevVertexAndDistanceTable.put(v, new PrevVertexAndDistance(v, Double.MAX_VALUE));
         }
     }
 
     /**
-     * Creates a Route object that represents a path between origin and destination vertices
-     * @param origin
-     * @param destination
-     * @return
+     * Creates a Back_end.Route object that represents a path between origin and destination vertices
+     * @param origin Origin vertex
+     * @param destination Destination vertex
+     * @return Back_end.Route object
      */
     public Route getRoute(Vertex origin, Vertex destination){
         reset();
-        prevVertexAndDistance.put(origin, new Edge(origin, 0));
+        prevVertexAndDistanceTable.put(origin, new PrevVertexAndDistance(origin, 0));
         recursiveDijkstra(origin);
         createPathRecursively(destination);
-        double pathLength = prevVertexAndDistance.get(destination).weight;
+        double pathLength = prevVertexAndDistanceTable.get(destination).totalWeight;
         if(path.size() == 1 && pathLength > 0){
             return new Route(null, -1);
         }
@@ -45,15 +48,15 @@ public class Dijkstra {
     }
 
     /**
-     * Updates the path List<Vertex> recursively from the origin vector,in prevVertexAndDistance to the vector passed
+     * Updates the path List<Back_end.Vertex> recursively from the origin vector,in prevVertexAndDistance to the vector passed
      * in the first step
      *
      * @param vertex
      */
     private void createPathRecursively(Vertex vertex){
-        for(Vertex v : prevVertexAndDistance.keySet()){
+        for(Vertex v : prevVertexAndDistanceTable.keySet()){
             if(v == vertex){
-                Vertex nextVert = prevVertexAndDistance.get(v).destination;
+                Vertex nextVert = prevVertexAndDistanceTable.get(v).prevVertex;
                 path.add(v);
                 if(nextVert == vertex){
                     return;
@@ -68,35 +71,35 @@ public class Dijkstra {
      * @param v
      */
     private void recursiveDijkstra(Vertex v) {
-        double currentDistance = prevVertexAndDistance.get(v).weight;
+        double currentDistance = prevVertexAndDistanceTable.get(v).totalWeight;
         unvisited.remove(v);
         for (Edge edge : adjacencyMap.get(v)) {
             Vertex adjVertex = edge.destination;
             double localWeight = edge.weight;
             double newSumWeight = localWeight + currentDistance;
-            if (newSumWeight < prevVertexAndDistance.get(adjVertex).weight) {
-                prevVertexAndDistance.put(adjVertex, new Edge(v, newSumWeight));
+            if (newSumWeight < prevVertexAndDistanceTable.get(adjVertex).totalWeight) {
+                prevVertexAndDistanceTable.put(adjVertex, new PrevVertexAndDistance(v, newSumWeight));
             }
         }
         if (unvisited.isEmpty()) {
             return;
         }
-        Vertex nextVertex = Collections.min(unvisited, new EdgeComparator(prevVertexAndDistance));
+        Vertex nextVertex = Collections.min(unvisited, new EdgeComparator(prevVertexAndDistanceTable));
         recursiveDijkstra(nextVertex);
     }
 
     /**
      * Compares vertices by the shortest distance from origin vertex in prevVertexAndDistance HashMap;
      */
-    private class EdgeComparator implements Comparator<Vertex> {
-        private HashMap<Vertex, Edge> prevVertexAndDistance;
-        EdgeComparator(HashMap<Vertex, Edge> prevVertexAndDistance){
-            this.prevVertexAndDistance = prevVertexAndDistance;
+    private static class EdgeComparator implements Comparator<Vertex> {
+        private HashMap<Vertex, PrevVertexAndDistance> prevVertexAndDistanceTable;
+        EdgeComparator(HashMap<Vertex, PrevVertexAndDistance> prevVertexAndDistanceTable){
+            this.prevVertexAndDistanceTable = prevVertexAndDistanceTable;
         }
 
         public int compare(Vertex v1, Vertex v2){
-            double totalWeight1 = prevVertexAndDistance.get(v1).weight;
-            double totalWeight2 = prevVertexAndDistance.get(v2).weight;
+            double totalWeight1 = prevVertexAndDistanceTable.get(v1).totalWeight;
+            double totalWeight2 = prevVertexAndDistanceTable.get(v2).totalWeight;
 
             if(totalWeight1 == totalWeight2){
                 return 0;
@@ -106,6 +109,15 @@ public class Dijkstra {
             }else {
                 return -1;
             }
+        }
+    }
+
+    private static class PrevVertexAndDistance{
+        Vertex prevVertex;
+        double totalWeight;
+        public PrevVertexAndDistance(Vertex prevVertex, double totalDistance) {
+            this.prevVertex = prevVertex;
+            this.totalWeight = totalDistance;
         }
     }
 }
