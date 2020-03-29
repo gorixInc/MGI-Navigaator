@@ -1,3 +1,4 @@
+Transition to using Map class instead of Graph class in Main
 Improve UI, add ability to remove elements
 Implement map saving, separate into two apps after
 Add more items here
