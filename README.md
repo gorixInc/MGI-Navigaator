@@ -1,5 +1,7 @@
 # MGI-Navigaator
 
+"mvn clean javafx:run" et jooksutada
+
 Kasutusjuhend:
 1) Alusta uue kaardi loomist vajutades nupule "New Map"
 2) Vajutades paiguta niimitu ristmiku kui soovid.
