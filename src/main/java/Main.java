@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import backEnd.*;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -13,16 +12,11 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-import javafx.scene.layout.VBox;
 
 public class Main extends Application {
 
@@ -52,6 +46,7 @@ public class Main extends Application {
         Button button2 = new Button("Load Map");
         Button button3 = new Button("New Map");
         Button button4 = new Button("Clear");
+        Button button5 = new Button("Test editor");
 
         Image image = new Image("http://www.thepluspaper.com/wp-content/uploads/2019/01/1.jpg");
 
@@ -64,12 +59,13 @@ public class Main extends Application {
         buttons.getChildren().add(button2);
         buttons.getChildren().add(button3);
         buttons.getChildren().add(button4);
+        buttons.getChildren().add(button5);
 
 
         gc.setFill(Color.WHEAT);
         gc.fillRect(0, 0, 600, 500);
 
-        Group map = new Group(canvas);
+        Pane map = new Pane(canvas);
 
         root.getChildren().add(buttons);
         root.getChildren().add(map);
@@ -84,7 +80,7 @@ public class Main extends Application {
             removePath(map);
             dijkstra = new Dijkstra(graph);
             System.out.println("Esimene töötab");
-            EventHandler<MouseEvent> findDistance = new EventHandler<MouseEvent>() {
+            /*EventHandler<MouseEvent> findDistance = new EventHandler<MouseEvent>() {
                 boolean first = true;
                 Vertex firstClick;
                 @Override
@@ -116,86 +112,19 @@ public class Main extends Application {
                     }
                 }
             };
-            map.addEventFilter(MouseEvent.MOUSE_CLICKED, findDistance);
+            map.addEventFilter(MouseEvent.MOUSE_CLICKED, findDistance);*/
         });
 
-        button2.setOnAction(e -> {
-            clearCanvas(map);
-            populateCanvas(map);
-            System.out.println("Teine Töötab");
-        });
 
-        button3.setOnAction(e -> {
-            clearCanvas(map);
-            edgesGraphics.clear();
-            graph = new Graph();
-            graphicalVertices = new ArrayList<>();
-
-            EventHandler<MouseEvent> addEdges = new EventHandler<MouseEvent>() {
-                boolean first = true;
-                RoadVertex firstClick;
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                        map.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
-                        System.out.println(graph.toString());
-                        System.out.println(graph.getAdjacencyMap());
-                    } else {
-                        Point2D point = new Point2D(mouseEvent.getX(), mouseEvent.getY());
-                        if (first) {
-                            for (GraphicalVertex graphicalVertex : graphicalVertices) {
-                                if(graphicalVertex.graphics.contains(point)){
-                                    firstClick = graphicalVertex;
-                                    first = false;
-                                    break;
-                                }
-                            }
-                        } else {
-                            for (GraphicalVertex graphicalVertex : graphicalVertices) {
-                                if (graphicalVertex.graphics.contains(point) && graphicalVertex != firstClick){
-                                    double firstX = firstClick.posX;
-                                    double firstY = firstClick.posY;
-                                    double secondX = graphicalVertex.posX;
-                                    double secondY = graphicalVertex.posY;
-                                    graph.addEdge(firstClick, graphicalVertex);
-                                    drawEdge(firstX, firstY, secondX, secondY, map);
-                                    first = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-
-            EventHandler<MouseEvent> addVertices = new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    if (event.getButton() == MouseButton.SECONDARY) {
-                        map.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
-                        map.addEventFilter(MouseEvent.MOUSE_CLICKED, addEdges);
-                        for (GraphicalVertex graphicalVertex : graphicalVertices) {
-                            System.out.println(graphicalVertex);
-                        }
-                    } else {
-                        constructVertex(event.getX(), event.getY(), map);
-                    }
-                }
-            };
-
-            map.addEventFilter(MouseEvent.MOUSE_CLICKED, addVertices);
-            System.out.println("Kolmas Töötab");
-        });
-
-        button4.setOnAction(e -> {
-            clearCanvas(map);
-            System.out.println("Neljas Töötab");
+        button5.setOnAction(e -> {
+            MapEditor mapEditor = new MapEditor();
+            mapEditor.editWindow();
         });
 
         stage.show();
     }
 
-    private void constructVertex(double x, double y, Group group){
+    private void constructVertex(double x, double y, Pane group){
         Circle vertex = drawVertex(x, y);
         if(vertex != null) {
             GraphicalVertex gv = new GraphicalVertex(graphicalVertices.size(), String.valueOf(graphicalVertices.size()), x, y, vertex);
@@ -204,14 +133,14 @@ public class Main extends Application {
         }
     }
 
-    private void removePath(Group group){
+    private void removePath(Pane group){
         routeEdges.forEach(edge -> group.getChildren().remove(edge));
         routeVertices.forEach(vertex -> group.getChildren().remove(vertex));
         routeEdges.clear();
         routeVertices.clear();
     }
 
-    private void drawPath(Route route, Group group){
+    private void drawPath(Route route, Pane group){
         if (route.getPathVertices() == null) return;
         for (Vertex pathVertex : route.getPathVertices()) {
             for (GraphicalVertex graphicalVertex : graphicalVertices) {
@@ -231,13 +160,13 @@ public class Main extends Application {
         routeEdges.forEach(edge -> group.getChildren().add(edge));
     }
 
-    private void clearCanvas(Group group){
+    private void clearCanvas(Pane group){
         graphicalVertices.forEach(vertex -> group.getChildren().remove(vertex.graphics));
         edgesGraphics.forEach(edge -> group.getChildren().remove(edge));
         removePath(group);
     }
 
-    private void populateCanvas(Group group){
+    private void populateCanvas(Pane group){
         graphicalVertices.forEach(vertex -> group.getChildren().add(vertex.graphics));
         edgesGraphics.forEach(edge -> group.getChildren().add(edge));
     }
