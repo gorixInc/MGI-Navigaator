@@ -2,7 +2,7 @@
 
 import java.util.ArrayList;
 
-import Back_end.*;
+import backEnd.*;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -46,69 +46,69 @@ public class Main extends Application {
         stage.setY(100);
 
         HBox root = new HBox();
-        VBox nupud = new VBox();
+        VBox buttons = new VBox();
 
-        Button nupp1 = new Button("New route");
-        Button nupp2 = new Button("Load Map");
-        Button nupp3 = new Button("New Map");
-        Button nupp4 = new Button("Clear");
+        Button button1 = new Button("New route");
+        Button button2 = new Button("Load Map");
+        Button button3 = new Button("New Map");
+        Button button4 = new Button("Clear");
 
-        Image pilt = new Image("http://www.thepluspaper.com/wp-content/uploads/2019/01/1.jpg");
+        Image image = new Image("http://www.thepluspaper.com/wp-content/uploads/2019/01/1.jpg");
 
-        BackgroundImage taust = new BackgroundImage(pilt, null, null, null, null);
+        BackgroundImage background = new BackgroundImage(image, null, null, null, null);
 
         Canvas canvas = new Canvas(600, 500);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        nupud.getChildren().add(nupp1);
-        nupud.getChildren().add(nupp2);
-        nupud.getChildren().add(nupp3);
-        nupud.getChildren().add(nupp4);
+        buttons.getChildren().add(button1);
+        buttons.getChildren().add(button2);
+        buttons.getChildren().add(button3);
+        buttons.getChildren().add(button4);
 
 
         gc.setFill(Color.WHEAT);
         gc.fillRect(0, 0, 600, 500);
 
-        Group kaart = new Group(canvas);
+        Group map = new Group(canvas);
 
-        root.getChildren().add(nupud);
-        root.getChildren().add(kaart);
+        root.getChildren().add(buttons);
+        root.getChildren().add(map);
 
         Scene scene1 = new Scene(root);
 
-        root.setBackground(new Background(taust));
+        root.setBackground(new Background(background));
 
         stage.setScene(scene1);
 
-        nupp1.setOnAction(e -> {
-            kustutaTeekond(kaart);
+        button1.setOnAction(e -> {
+            removePath(map);
             dijkstra = new Dijkstra(graph);
             System.out.println("Esimene töötab");
             EventHandler<MouseEvent> findDistance = new EventHandler<MouseEvent>() {
-                boolean esimene = true;
-                Vertex esimeneClick;
+                boolean first = true;
+                Vertex firstClick;
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                        kaart.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
+                        map.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
                     } else {
                         Point2D point = new Point2D(mouseEvent.getX(), mouseEvent.getY());
-                        if (esimene) {
-                            kustutaTeekond(kaart);
+                        if (first) {
+                            removePath(map);
                             for (GraphicalVertex graphicalVertex : graphicalVertices) {
                                 if (graphicalVertex.graphics.contains(point)){
-                                    esimeneClick = graphicalVertex;
-                                    esimene = false;
+                                    firstClick = graphicalVertex;
+                                    first = false;
                                     break;
                                 }
                             }
                         } else {
                             for (GraphicalVertex graphicalVertex : graphicalVertices) {
                                 if (graphicalVertex.graphics.contains(point)){
-                                    Route teekond = dijkstra.getRoute(esimeneClick, graphicalVertex);
-                                    joonistaTeekond(teekond, kaart);
+                                    Route teekond = dijkstra.getRoute(firstClick, graphicalVertex);
+                                    drawPath(teekond, map);
                                     System.out.println(teekond);
-                                    esimene = true;
+                                    first = true;
                                     break;
                                 }
                             }
@@ -116,50 +116,50 @@ public class Main extends Application {
                     }
                 }
             };
-            kaart.addEventFilter(MouseEvent.MOUSE_CLICKED, findDistance);
+            map.addEventFilter(MouseEvent.MOUSE_CLICKED, findDistance);
         });
 
-        nupp2.setOnAction(e -> {
-            clearCanvas(kaart);
-            populateCanvas(kaart);
+        button2.setOnAction(e -> {
+            clearCanvas(map);
+            populateCanvas(map);
             System.out.println("Teine Töötab");
         });
 
-        nupp3.setOnAction(e -> {
-            clearCanvas(kaart);
+        button3.setOnAction(e -> {
+            clearCanvas(map);
             edgesGraphics.clear();
             graph = new Graph();
             graphicalVertices = new ArrayList<>();
 
             EventHandler<MouseEvent> addEdges = new EventHandler<MouseEvent>() {
-                boolean esimene = true;
-                RoadVertex esimeneClick;
+                boolean first = true;
+                RoadVertex firstClick;
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                        kaart.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
+                        map.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
                         System.out.println(graph.toString());
                         System.out.println(graph.getAdjacencyMap());
                     } else {
                         Point2D point = new Point2D(mouseEvent.getX(), mouseEvent.getY());
-                        if (esimene) {
+                        if (first) {
                             for (GraphicalVertex graphicalVertex : graphicalVertices) {
                                 if(graphicalVertex.graphics.contains(point)){
-                                    esimeneClick = graphicalVertex;
-                                    esimene = false;
+                                    firstClick = graphicalVertex;
+                                    first = false;
                                     break;
                                 }
                             }
                         } else {
                             for (GraphicalVertex graphicalVertex : graphicalVertices) {
-                                if (graphicalVertex.graphics.contains(point) && graphicalVertex != esimeneClick){
-                                    double esimeneX = esimeneClick.posX;
-                                    double esimeneY = esimeneClick.posY;
-                                    double teineX = graphicalVertex.posX;
-                                    double teineY = graphicalVertex.posY;
-                                    graph.addEdge(esimeneClick, graphicalVertex);
-                                    drawEdge(esimeneX, esimeneY, teineX, teineY, kaart);
-                                    esimene = true;
+                                if (graphicalVertex.graphics.contains(point) && graphicalVertex != firstClick){
+                                    double firstX = firstClick.posX;
+                                    double firstY = firstClick.posY;
+                                    double secondX = graphicalVertex.posX;
+                                    double secondY = graphicalVertex.posY;
+                                    graph.addEdge(firstClick, graphicalVertex);
+                                    drawEdge(firstX, firstY, secondX, secondY, map);
+                                    first = true;
                                     break;
                                 }
                             }
@@ -168,27 +168,27 @@ public class Main extends Application {
                 }
             };
 
-            EventHandler<MouseEvent> addVertexes = new EventHandler<MouseEvent>() {
+            EventHandler<MouseEvent> addVertices = new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
                     if (event.getButton() == MouseButton.SECONDARY) {
-                        kaart.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
-                        kaart.addEventFilter(MouseEvent.MOUSE_CLICKED, addEdges);
+                        map.removeEventFilter(MouseEvent.MOUSE_CLICKED, this);
+                        map.addEventFilter(MouseEvent.MOUSE_CLICKED, addEdges);
                         for (GraphicalVertex graphicalVertex : graphicalVertices) {
                             System.out.println(graphicalVertex);
                         }
                     } else {
-                        constructVertex(event.getX(), event.getY(), kaart);
+                        constructVertex(event.getX(), event.getY(), map);
                     }
                 }
             };
 
-            kaart.addEventFilter(MouseEvent.MOUSE_CLICKED, addVertexes);
+            map.addEventFilter(MouseEvent.MOUSE_CLICKED, addVertices);
             System.out.println("Kolmas Töötab");
         });
 
-        nupp4.setOnAction(e -> {
-            clearCanvas(kaart);
+        button4.setOnAction(e -> {
+            clearCanvas(map);
             System.out.println("Neljas Töötab");
         });
 
@@ -204,14 +204,14 @@ public class Main extends Application {
         }
     }
 
-    private void kustutaTeekond(Group group){
+    private void removePath(Group group){
         routeEdges.forEach(edge -> group.getChildren().remove(edge));
         routeVertices.forEach(vertex -> group.getChildren().remove(vertex));
         routeEdges.clear();
         routeVertices.clear();
     }
 
-    private void joonistaTeekond(Route route, Group group){
+    private void drawPath(Route route, Group group){
         if (route.getPathVertices() == null) return;
         for (Vertex pathVertex : route.getPathVertices()) {
             for (GraphicalVertex graphicalVertex : graphicalVertices) {
@@ -234,7 +234,7 @@ public class Main extends Application {
     private void clearCanvas(Group group){
         graphicalVertices.forEach(vertex -> group.getChildren().remove(vertex.graphics));
         edgesGraphics.forEach(edge -> group.getChildren().remove(edge));
-        kustutaTeekond(group);
+        removePath(group);
     }
 
     private void populateCanvas(Group group){
@@ -244,16 +244,16 @@ public class Main extends Application {
 
 
     private Circle drawVertex(double x, double y) {
-        boolean olemas = false;
+        boolean vertexExists = false;
         for (GraphicalVertex graphicalVertex : graphicalVertices) {
             Point2D point = new Point2D(x, y);
             if (graphicalVertex.graphics.contains(point)){
-                System.out.println("Vajutasid koha peale");
-                olemas = true;
+                System.out.println("A vertex already exists at that point.");
+                vertexExists = true;
                 break;
             }
         }
-        if (!olemas) {
+        if (!vertexExists) {
             return new Circle(x, y, 5);
         }
         return null;

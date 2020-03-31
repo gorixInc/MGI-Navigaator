@@ -1,7 +1,7 @@
-import Back_end.Dijkstra;
-import Back_end.Graph;
-import Back_end.Route;
-import Back_end.Vertex;
+import backEnd.Dijkstra;
+import backEnd.Graph;
+import backEnd.Route;
+import backEnd.Vertex;
 
 public class GraphTest {
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package Back_end;
+package backEnd;
 
 public class Map {
     Graph mapGraph;
