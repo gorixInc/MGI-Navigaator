@@ -1,6 +1,6 @@
 package frontEnd.eventHandler;
 
-import backEnd.*;
+import map.*;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;

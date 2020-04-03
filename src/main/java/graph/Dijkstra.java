@@ -1,4 +1,7 @@
-package backEnd;
+package graph;
+
+
+import map.Route;
 
 import java.util.*;
 
@@ -74,7 +77,7 @@ public class Dijkstra {
         double currentDistance = prevVertexAndDistanceTable.get(v).totalWeight;
         unvisited.remove(v);
         for (Edge edge : adjacencyMap.get(v)) {
-            Vertex adjVertex = edge.destination;
+            Vertex adjVertex = edge.getDestination();
             double localWeight = edge.weight;
             double newSumWeight = localWeight + currentDistance;
             if (newSumWeight < prevVertexAndDistanceTable.get(adjVertex).totalWeight) {

@@ -2,8 +2,11 @@
 
 import java.util.ArrayList;
 
-import backEnd.*;
+import map.*;
 
+import graph.Dijkstra;
+import graph.Graph;
+import graph.Vertex;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -127,7 +130,7 @@ public class Main extends Application {
     private void constructVertex(double x, double y, Pane group){
         Circle vertex = drawVertex(x, y);
         if(vertex != null) {
-            GraphicalVertex gv = new GraphicalVertex(graphicalVertices.size(), String.valueOf(graphicalVertices.size()), x, y, vertex);
+            GraphicalVertex gv = new GraphicalVertex(graphicalVertices.size(), x, y, vertex);
             graphicalVertices.add(gv);
             group.getChildren().add(gv.graphics);
         }

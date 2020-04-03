@@ -1,41 +1,38 @@
-import backEnd.Dijkstra;
-import backEnd.Graph;
-import backEnd.Route;
-import backEnd.Vertex;
+import map.*;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.IOException;
 
 public class GraphTest {
-    public static void main(String[] args) {
-        Graph graph = new Graph();
-        Vertex A = new Vertex(1, "A");
-        Vertex B = new Vertex(2, "B");
-        Vertex C = new Vertex(3, "C");
-        Vertex D = new Vertex(4, "D");
-        Vertex E = new Vertex(5, "E");
-        Vertex F = new Vertex(6, "F");
+    public static void main(String[] args) throws ParserConfigurationException, TransformerException, IOException, SAXException {
+        Map map = new Map("322");
 
-        graph.addNonDirectedEdge(A, B, 4);
-        graph.addNonDirectedEdge(A, D, 30);
-        graph.addNonDirectedEdge(A, C, 5);
-        graph.addNonDirectedEdge(C, D, 10);
-        graph.addNonDirectedEdge(B, D, 13);
-        graph.addEdge(D, E, 1);
-        graph.addEdge(E, F, 7);
+        RoadVertex v1 = new RoadVertex(1, 10, 20);
+        RoadVertex v2 = new RoadVertex(2, 20, 10);
+        RoadVertex v3 = new RoadVertex(3, 30, 20);
+        RoadVertex v4 = new RoadVertex(4, 40, 250);
 
 
-        System.out.println(graph.toString());
+        map.addTwoWayRoad(v1, v2);
+        map.addTwoWayRoad(v2, v3);
+        map.addOneWayRoad(v4, v1);
+        map.addTwoWayRoad(v4, v2);
 
-        Dijkstra dijkstra = new Dijkstra(graph);
-        Route r = dijkstra.getRoute(A,D);
-        System.out.println(r.toString());
 
-        r = dijkstra.getRoute(B,C);
-        System.out.println(r.toString());
+        System.out.println(map.getGraph().toString());
 
-        r = dijkstra.getRoute(E,A);
-        System.out.println(r.toString());
+        MapFileHandler.saveMap(map, "test1.xml");
 
-        graph.removeNonDirectedEdge(D, E);
-        System.out.println(graph.toString());
+        Map loadedMap = MapFileHandler.openMap("test1.xml");
 
+        System.out.println(loadedMap.getGraph().toString());
+
+        MapFileHandler.saveMap(loadedMap, "test2.xml");
+
+        Map loadedMap2 = MapFileHandler.openMap("test2.xml");
+
+        System.out.println(loadedMap2.getGraph().toString());
     }
 }

@@ -1,9 +1,8 @@
 package frontEnd.eventHandler;
 
-import backEnd.GraphicalVertex;
+import map.GraphicalVertex;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -32,7 +31,7 @@ public class AddJunction implements EventHandler<MouseEvent> {
     private void constructVertex(double x, double y, Pane group){
         Circle vertex = drawVertex(x, y);
         if(vertex != null) {
-            GraphicalVertex gv = new GraphicalVertex(graphicalVertices.size(), String.valueOf(graphicalVertices.size()), x, y, vertex);
+            GraphicalVertex gv = new GraphicalVertex(graphicalVertices.size(), x, y, vertex);
             graphicalVertices.add(gv);
             group.getChildren().add(gv.graphics);
         }

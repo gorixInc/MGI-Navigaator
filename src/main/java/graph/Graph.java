@@ -1,4 +1,6 @@
-package backEnd;
+package graph;
+
+import map.RoadVertex;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +18,6 @@ public class Graph {
     public List<Vertex> getVertices() {
         return vertices;
     }
-
     /**
      * Connects origin vertex to destination vertex with given weight, adds vertices to adjMap if needed.
      * @param origin
@@ -72,7 +73,7 @@ public class Graph {
     public void removeEdge(Vertex origin, Vertex destination){
         LinkedList<Edge> edges = adjacencyMap.get(origin);
         for(Edge edge : edges){
-            if(edge.destination == destination){
+            if(edge.getDestination() == destination){
                 edges.remove(edge);
                 return;
             }
@@ -92,9 +93,9 @@ public class Graph {
     public String toString(){
         StringBuilder sb = new StringBuilder();
         for(Vertex vertex: adjacencyMap.keySet()){
-            sb.append(vertex.name).append(" -->");
+            sb.append(vertex.index).append(" -->");
             for(Edge edge: adjacencyMap.get(vertex)){
-                sb.append("\t{").append(edge.destination.name).append(", ").append(edge.weight).append("}");
+                sb.append("\t{").append(edge.getDestination().index).append(", ").append(edge.weight).append("}");
             }
             sb.append('\n');
         }

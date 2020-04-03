@@ -1,4 +1,6 @@
-package backEnd;
+package map;
+
+import graph.Vertex;
 
 import java.util.List;
 
@@ -6,7 +8,7 @@ public class Route {
     List<Vertex> pathVertices;
     double totalWeight;
 
-    Route(List pathVertices, double totalWeight){
+    public Route(List pathVertices, double totalWeight){
         this.pathVertices = pathVertices;
         this.totalWeight = totalWeight;
     }
@@ -18,7 +20,7 @@ public class Route {
         StringBuilder sb = new StringBuilder();
         sb.append("Length: ").append(totalWeight).append(" Path: ");
         for (Vertex v:pathVertices) {
-            sb.append(v.name).append(", ");
+            sb.append(v.index).append(", ");
         }
         return sb.toString();
     }

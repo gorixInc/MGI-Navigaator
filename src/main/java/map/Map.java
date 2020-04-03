@@ -1,8 +1,10 @@
-package backEnd;
+package map;
+
+import graph.Graph;
 
 public class Map {
     Graph mapGraph;
-    String name;
+    public String name;
 
     public Map(String name) {
         this.mapGraph = new Graph();
@@ -30,6 +32,14 @@ public class Map {
                 Math.pow(Math.abs(start.posX - end.posX), 2));
         mapGraph.addEdge(start, end, distance);
     }
+    /**
+     * Adds a one-way edge to mapGraph with distance calculated from coordinates, weight override
+     * @param start
+     * @param end
+     */
+    public void addOneWayRoad(RoadVertex start, RoadVertex end, Double weight){
+        mapGraph.addEdge(start, end, weight);
+    }
 
     /**
      * removes all edges between given vertices
@@ -46,4 +56,8 @@ public class Map {
     }
 
     //more methods when we need them
+
+    public Graph getGraph() {
+        return mapGraph;
+    }
 }
