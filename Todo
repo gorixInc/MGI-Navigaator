@@ -1,6 +1,6 @@
 Transition to using Map class instead of Graph class in Main
-Improve UI, add ability to remove elements
-Implement map saving, separate into two apps after
+Improve UI, add ability to remove elements, setting scale... more things to come
+Implement map saving (+), separate into two apps after
 Implement traffic simulation
 Implement different types of roads (pedestrian, motorways, railways??)
 Add more items here
