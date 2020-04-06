@@ -11,6 +11,8 @@ import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -60,6 +62,13 @@ public class MapEditor {
 
         saveButton.setOnAction(e ->{
             group.setOnMouseClicked(null);
+            try {
+                MapFileHandler.saveMap(map, "map.XML");
+            } catch (ParserConfigurationException ex) {
+                ex.printStackTrace();
+            } catch (TransformerException ex) {
+                ex.printStackTrace();
+            }
             System.out.println(map);
         });
 

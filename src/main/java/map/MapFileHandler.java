@@ -142,7 +142,7 @@ public class MapFileHandler {
             Element weight = doc.createElement("weight");
 
             destID.appendChild(doc.createTextNode(edge.getDestination().index.toString()));
-            weight.appendChild(doc.createTextNode(edge.getDestination().toString()));
+            weight.appendChild(doc.createTextNode(edge.getWeight().toString()));
 
             edgeEl.appendChild(destID);
             edgeEl.appendChild(weight);

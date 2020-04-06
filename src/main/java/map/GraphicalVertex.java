@@ -8,4 +8,9 @@ public class GraphicalVertex extends RoadVertex {
         super(index, x, y);
         this.graphics = graphics;
     }
+
+    public GraphicalVertex(RoadVertex rVertex, Circle graphics){
+        super(rVertex.index, rVertex.posX, rVertex.posY);
+        this.graphics = graphics;
+    }
 }

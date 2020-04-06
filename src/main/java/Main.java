@@ -1,5 +1,6 @@
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import map.*;
@@ -20,6 +21,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 public class Main extends Application {
 
@@ -50,6 +54,7 @@ public class Main extends Application {
         Button button3 = new Button("New Map");
         Button button4 = new Button("Clear");
         Button button5 = new Button("Test editor");
+        Button button6 = new Button("Test viewer");
 
         Image image = new Image("http://www.thepluspaper.com/wp-content/uploads/2019/01/1.jpg");
 
@@ -63,6 +68,7 @@ public class Main extends Application {
         buttons.getChildren().add(button3);
         buttons.getChildren().add(button4);
         buttons.getChildren().add(button5);
+        buttons.getChildren().add(button6);
 
 
         gc.setFill(Color.WHEAT);
@@ -122,6 +128,19 @@ public class Main extends Application {
         button5.setOnAction(e -> {
             MapEditor mapEditor = new MapEditor();
             mapEditor.editWindow();
+        });
+
+        button6.setOnAction(e -> {
+            MapViewer mapViewer = new MapViewer();
+            try {
+                mapViewer.viewWindow();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } catch (SAXException ex) {
+                ex.printStackTrace();
+            } catch (ParserConfigurationException ex) {
+                ex.printStackTrace();
+            }
         });
 
         stage.show();
