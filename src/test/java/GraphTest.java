@@ -1,3 +1,4 @@
+import graph.Dijkstra;
 import map.*;
 import org.xml.sax.SAXException;
 
@@ -8,31 +9,31 @@ import java.io.IOException;
 public class GraphTest {
     public static void main(String[] args) throws ParserConfigurationException, TransformerException, IOException, SAXException {
         Map map = new Map("322");
+        Dijkstra dijkstra = new Dijkstra(map.getGraph());
 
-        RoadVertex v1 = new RoadVertex(1, 10, 20);
-        RoadVertex v2 = new RoadVertex(2, 20, 10);
-        RoadVertex v3 = new RoadVertex(3, 30, 20);
-        RoadVertex v4 = new RoadVertex(4, 40, 250);
-
-
-        map.addTwoWayRoad(v1, v2);
-        map.addTwoWayRoad(v2, v3);
-        map.addOneWayRoad(v4, v1);
-        map.addTwoWayRoad(v4, v2);
+        RoadVertex v1 = new RoadVertex(1, 0, 0);
+        RoadVertex v2 = new RoadVertex(2, 20, 0);
+        RoadVertex v3 = new RoadVertex(3, 30, 0);
+        RoadVertex v4 = new RoadVertex(4, 40, 0);
+        RoadVertex v5 = new RoadVertex(5, 50, 0);
+        RoadVertex v6 = new RoadVertex(6, 60, 0);
 
 
-        System.out.println(map.getGraph().toString());
+        map.addTwoWayRoad(v1, v2, new Integer[]{1,2,3});
+        map.addTwoWayRoad(v2, v3, new Integer[]{1,2,3});
+        map.addTwoWayRoad(v3, v4, new Integer[]{1});
+        map.addTwoWayRoad(v3, v5, new Integer[]{2});
 
-        MapFileHandler.saveMap(map, "test1.xml");
+        Route r = dijkstra.getRouteWithRestrictions(v1, v5, new Integer[]{2});
+        System.out.println(map.toString());
+        System.out.println(r.toString());
 
-        Map loadedMap = MapFileHandler.openMap("test1.xml");
+        //MapFileHandler.saveMap(map, "test.xml");
+        Map loadedMap = MapFileHandler.openMap("test.xml");
 
-        System.out.println(loadedMap.getGraph().toString());
-
-        MapFileHandler.saveMap(loadedMap, "test2.xml");
-
-        Map loadedMap2 = MapFileHandler.openMap("test2.xml");
-
-        System.out.println(loadedMap2.getGraph().toString());
+        Dijkstra newD = new Dijkstra(loadedMap.getGraph());
+        System.out.println(loadedMap.toString());
+        r = newD.getRouteWithRestrictions(v1, v4, new Integer[]{1});
+        System.out.println(r.toString());
     }
 }

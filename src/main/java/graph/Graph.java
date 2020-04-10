@@ -1,5 +1,6 @@
 package graph;
 
+import map.RoadEdge;
 import map.RoadVertex;
 
 import java.util.ArrayList;
@@ -8,14 +9,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Graph {
-    private HashMap<Vertex, LinkedList<Edge>> adjacencyMap;
-    private List<Vertex> vertices;
+    private HashMap<RoadVertex, LinkedList<RoadEdge>> adjacencyMap;
+    private List<RoadVertex> vertices;
     public Graph(){
         this.adjacencyMap = new HashMap<>();
         this.vertices = new ArrayList<>();
     }
 
-    public List<Vertex> getVertices() {
+    public HashMap<RoadVertex, LinkedList<RoadEdge>> getAdjacencyMap() {
+        return adjacencyMap;
+    }
+    public List<RoadVertex> getVertices() {
         return vertices;
     }
     /**
@@ -24,14 +28,15 @@ public class Graph {
      * @param destination
      * @param weight
      */
-    public void addEdge(Vertex origin, Vertex destination, double weight){
+    public void addEdge(RoadVertex origin, RoadVertex destination, double weight, Integer[] allowedTags){
+        RoadEdge edge = new RoadEdge(destination, weight, allowedTags);
         if(!adjacencyMap.containsKey(origin)){
-            LinkedList<Edge> connectedVertices = new LinkedList<>();
-            connectedVertices.add(new Edge(destination,weight));
+            LinkedList<RoadEdge> connectedVertices = new LinkedList<>();
+            connectedVertices.add(edge);
             adjacencyMap.put(origin, connectedVertices);
             vertices.add(origin);
         }else {
-            adjacencyMap.get(origin).add(new Edge(destination, weight));
+            adjacencyMap.get(origin).add(edge);
         }
         if (!adjacencyMap.containsKey(destination)){
             adjacencyMap.put(destination, new LinkedList<>());
@@ -40,39 +45,26 @@ public class Graph {
     }
 
     /**
-     * addEdge for RoadVertices, calculates weight from coordinates.
-     * @param origin
-     * @param destination
-     */
-    public void addEdge(RoadVertex origin, RoadVertex destination){
-        double weight = Math.sqrt(Math.pow(Math.abs(origin.posY - destination.posY), 2) +
-                Math.pow(Math.abs(origin.posX - destination.posX), 2));
-        addEdge(origin, destination, weight);
-    }
-
-    public HashMap<Vertex, LinkedList<Edge>> getAdjacencyMap() {
-        return adjacencyMap;
-    }
-
-    /**
      * Adds and edge from v1 to v2, and from v2 to v1
      * @param v1
      * @param v2
      * @param weight
      */
-    public void addNonDirectedEdge(Vertex v1, Vertex v2, double weight){
-        addEdge(v1, v2, weight);
-        addEdge(v2, v1, weight);
+
+    public void addNonDirectedEdge(RoadVertex v1, RoadVertex v2, double weight, Integer[] allowedTags){
+        addEdge(v1, v2, weight, allowedTags);
+        addEdge(v2, v1, weight, allowedTags);
     }
+
 
     /**
      * Removes edge pointing to destination from origin from adjacency dict
      * @param origin
      * @param destination
      */
-    public void removeEdge(Vertex origin, Vertex destination){
-        LinkedList<Edge> edges = adjacencyMap.get(origin);
-        for(Edge edge : edges){
+    public void removeEdge(RoadVertex origin, RoadVertex destination){
+        LinkedList<RoadEdge> edges = adjacencyMap.get(origin);
+        for(RoadEdge edge : edges){
             if(edge.getDestination() == destination){
                 edges.remove(edge);
                 return;
@@ -85,17 +77,17 @@ public class Graph {
      * @param v1
      * @param v2
      */
-    public void removeNonDirectedEdge(Vertex v1, Vertex v2){
+    public void removeNonDirectedEdge(RoadVertex v1, RoadVertex v2){
         removeEdge(v1, v2);
         removeEdge(v2, v1);
     }
 
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        for(Vertex vertex: adjacencyMap.keySet()){
+        for(RoadVertex vertex: adjacencyMap.keySet()){
             sb.append(vertex.index).append(" -->");
-            for(Edge edge: adjacencyMap.get(vertex)){
-                sb.append("\t{").append(edge.getDestination().index).append(", ").append(edge.weight).append("}");
+            for(RoadEdge edge: adjacencyMap.get(vertex)){
+                sb.append("\t{").append(edge.getDestination().index).append(", ").append(edge.getWeight()).append("}");
             }
             sb.append('\n');
         }

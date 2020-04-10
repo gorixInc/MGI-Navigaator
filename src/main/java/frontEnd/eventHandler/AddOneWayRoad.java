@@ -49,9 +49,9 @@ public class AddOneWayRoad implements EventHandler<MouseEvent> {
                         double secondX = graphicalVertex.posX;
                         double secondY = graphicalVertex.posY;
                         if (twoWay) {
-                            graph.addTwoWayRoad(firstClick, graphicalVertex);
+                            graph.addTwoWayRoad(firstClick, graphicalVertex, new Integer[]{1});
                         } else {
-                            graph.addOneWayRoad(firstClick, graphicalVertex);
+                            graph.addOneWayRoad(firstClick, graphicalVertex, new Integer[]{1});
                         }
                         drawEdge(firstX, firstY, secondX, secondY, map);
                         first = true;

@@ -3,6 +3,7 @@ package map;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import javax.xml.parsers.DocumentBuilder;
@@ -14,8 +15,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import graph.Edge;
-import graph.Vertex;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -69,8 +68,15 @@ public class MapFileHandler {
                         .item(0).getTextContent());
                 int destinationIndex = Integer.parseInt(thisEdge.getElementsByTagName("destinationIndex")
                         .item(0).getTextContent());
+
+                NodeList allowedTags = thisEdge.getElementsByTagName("tag");
+                Integer[] tags = new Integer[allowedTags.getLength()];
+                for(int k = 0; k < tags.length; k++){
+                    tags[k] = Integer.parseInt(allowedTags.item(k).getTextContent());
+                }
+
                 map.addOneWayRoad(tempVertexHashMap.get(thisVertIndex), tempVertexHashMap.get(destinationIndex)
-                        , thisEdgeWeight);
+                        , thisEdgeWeight, tags);
             }
         }
     }
@@ -96,10 +102,10 @@ public class MapFileHandler {
         Element graph = document.createElement("graph");
         root.appendChild(graph);
 
-        HashMap<Vertex, LinkedList<Edge>> adjacencyMap = map.getGraph().getAdjacencyMap();
+        HashMap<RoadVertex, LinkedList<RoadEdge>> adjacencyMap = map.getGraph().getAdjacencyMap();
 
-        for(Vertex key: adjacencyMap.keySet()){
-            graph.appendChild(createVertexNode(document, (RoadVertex) key, adjacencyMap.get(key)));
+        for(RoadVertex key: adjacencyMap.keySet()){
+            graph.appendChild(createVertexNode(document, key, adjacencyMap.get(key)));
         }
 
         //Finalizing
@@ -124,7 +130,7 @@ public class MapFileHandler {
         return metadata;
     }
 
-    private static Node createVertexNode(Document doc, RoadVertex vertex, LinkedList<Edge> edgeList){
+    private static Node createVertexNode(Document doc, RoadVertex vertex, LinkedList<RoadEdge> edgeList){
         Element vertexEl = doc.createElement("vertex");
         vertexEl.setAttribute("index", vertex.index.toString());
 
@@ -133,22 +139,30 @@ public class MapFileHandler {
 
         Element posY = doc.createElement("posY");
         posY.appendChild(doc.createTextNode(vertex.posY.toString()));
+
         vertexEl.appendChild(posX);
         vertexEl.appendChild(posY);
 
-        for(Edge edge: edgeList){
+        for(RoadEdge edge: edgeList){
             Element edgeEl = doc.createElement("edge");
             Element destID = doc.createElement("destinationIndex");
             Element weight = doc.createElement("weight");
+            Element allowedTags = doc.createElement("allowedtags");
+
+            for(Integer tag: edge.getAllowedTags()){
+                Element tagEl = doc.createElement("tag");
+                tagEl.appendChild(doc.createTextNode(tag.toString()));
+                allowedTags.appendChild(tagEl);
+            }
 
             destID.appendChild(doc.createTextNode(edge.getDestination().index.toString()));
             weight.appendChild(doc.createTextNode(edge.getWeight().toString()));
 
             edgeEl.appendChild(destID);
             edgeEl.appendChild(weight);
+            edgeEl.appendChild(allowedTags);
 
             vertexEl.appendChild(edgeEl);
-
         }
         return vertexEl;
     }

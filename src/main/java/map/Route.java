@@ -1,11 +1,10 @@
 package map;
 
-import graph.Vertex;
 
 import java.util.List;
 
 public class Route {
-    List<Vertex> pathVertices;
+    List<RoadVertex> pathVertices;
     double totalWeight;
 
     public Route(List pathVertices, double totalWeight){
@@ -19,13 +18,13 @@ public class Route {
         }
         StringBuilder sb = new StringBuilder();
         sb.append("Length: ").append(totalWeight).append(" Path: ");
-        for (Vertex v:pathVertices) {
+        for (RoadVertex v:pathVertices) {
             sb.append(v.index).append(", ");
         }
         return sb.toString();
     }
 
-    public List<Vertex> getPathVertices() {
+    public List<RoadVertex> getPathVertices() {
         return pathVertices;
     }
 

@@ -7,7 +7,6 @@ import map.*;
 
 import graph.Dijkstra;
 import graph.Graph;
-import graph.Vertex;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -164,7 +163,7 @@ public class Main extends Application {
 
     private void drawPath(Route route, Pane group){
         if (route.getPathVertices() == null) return;
-        for (Vertex pathVertex : route.getPathVertices()) {
+        for (RoadVertex pathVertex : route.getPathVertices()) {
             for (GraphicalVertex graphicalVertex : graphicalVertices) {
                 if (graphicalVertex.index == pathVertex.index){
                     Circle routeVertex = new Circle(graphicalVertex.posX, graphicalVertex.posY, 2.5);
