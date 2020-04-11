@@ -10,7 +10,7 @@ import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
 
-public class AddOneWayRoad implements EventHandler<MouseEvent> {
+public class AddRoad implements EventHandler<MouseEvent> {
 
     private Pane map;
     private ArrayList<GraphicalVertex> graphicalVertices;
@@ -18,7 +18,7 @@ public class AddOneWayRoad implements EventHandler<MouseEvent> {
     private ArrayList<Line> edgesGraphics;
     private boolean twoWay;
 
-    public AddOneWayRoad(Pane map, ArrayList<GraphicalVertex> graphicalVertices, Map graph, ArrayList<Line> edgesGraphics, boolean twoWay) {
+    public AddRoad(Pane map, ArrayList<GraphicalVertex> graphicalVertices, Map graph, ArrayList<Line> edgesGraphics, boolean twoWay) {
         this.map = map;
         this.graphicalVertices = graphicalVertices;
         this.graph = graph;
@@ -35,23 +35,23 @@ public class AddOneWayRoad implements EventHandler<MouseEvent> {
             Point2D point = new Point2D(mouseEvent.getX(), mouseEvent.getY());
             if (first) {
                 for (GraphicalVertex graphicalVertex : graphicalVertices) {
-                    if (graphicalVertex.graphics.contains(point)) {
-                        firstClick = graphicalVertex;
+                    if (graphicalVertex.getGraphics().contains(point)) {
+                        firstClick = graphicalVertex.getRoadVertex();
                         first = false;
                         break;
                     }
                 }
             } else {
                 for (GraphicalVertex graphicalVertex : graphicalVertices) {
-                    if (graphicalVertex.graphics.contains(point) && graphicalVertex != firstClick) {
+                    if (graphicalVertex.getGraphics().contains(point) && graphicalVertex.getRoadVertex() != firstClick) {
                         double firstX = firstClick.posX;
                         double firstY = firstClick.posY;
-                        double secondX = graphicalVertex.posX;
-                        double secondY = graphicalVertex.posY;
+                        double secondX = graphicalVertex.getRoadVertex().posX;
+                        double secondY = graphicalVertex.getRoadVertex().posY;
                         if (twoWay) {
-                            graph.addTwoWayRoad(firstClick, graphicalVertex, new Integer[]{1});
+                            graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), new Integer[]{1});
                         } else {
-                            graph.addOneWayRoad(firstClick, graphicalVertex, new Integer[]{1});
+                            graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), new Integer[]{1});
                         }
                         drawEdge(firstX, firstY, secondX, secondY, map);
                         first = true;

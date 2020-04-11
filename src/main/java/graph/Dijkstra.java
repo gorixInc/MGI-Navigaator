@@ -117,7 +117,7 @@ public class Dijkstra {
 
     private void recursiveDijkstra(RoadVertex v, List<Integer> allowedTags) {
         double currentDistance = prevVertexAndDistanceTable.get(v).totalWeight;
-        unvisited.remove(v);;
+        unvisited.remove(v);
         for (RoadEdge edge : adjacencyMap.get(v)) {
             //Checking tags
             boolean valid = false;

@@ -1,5 +1,5 @@
 import map.*;
-import frontEnd.eventHandler.AddOneWayRoad;
+import frontEnd.eventHandler.AddRoad;
 import frontEnd.eventHandler.AddJunction;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -41,12 +41,19 @@ public class MapEditor {
 
         CheckBox twoWay = new CheckBox("Two way?");
 
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open image file");
-        fileChooser.getExtensionFilters().addAll(
+        FileChooser imageChooser = new FileChooser();
+        imageChooser.setTitle("Open image file");
+        imageChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("PNG", "*.png"),
                 new FileChooser.ExtensionFilter("JPG", "*.jpg")
         );
+
+        FileChooser saveChooser = new FileChooser();
+        saveChooser.setTitle("Save MAP file");
+        saveChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("MAP", "*.MAP")
+        );
+
         final HBox hBox = new HBox();
         VBox vBox = new VBox();
         Pane group = new Pane();
@@ -55,28 +62,30 @@ public class MapEditor {
         AddJunction addJunction = new AddJunction(group, graphicalVertices);
         addVertexButton.setOnAction(e -> group.setOnMouseClicked(addJunction));
 
-        AddOneWayRoad addOneWayRoad = new AddOneWayRoad(group, graphicalVertices, map, edgesGraphics, twoWay.isSelected());
-        addEdgesButton.setOnAction(e -> group.setOnMouseClicked(addOneWayRoad));
+        AddRoad addRoad = new AddRoad(group, graphicalVertices, map, edgesGraphics, twoWay.isSelected());
+        addEdgesButton.setOnAction(e -> group.setOnMouseClicked(addRoad));
 
-        twoWay.setOnAction(e->addOneWayRoad.updateCheckbox(twoWay.isSelected()));
+        twoWay.setOnAction(e->addRoad.updateCheckbox(twoWay.isSelected()));
 
         saveButton.setOnAction(e ->{
             group.setOnMouseClicked(null);
-            try {
-                MapFileHandler.saveMap(map, "map.XML");
-            } catch (ParserConfigurationException ex) {
-                ex.printStackTrace();
-            } catch (TransformerException ex) {
-                ex.printStackTrace();
+            File file = saveChooser.showSaveDialog(stage);
+            if (file != null){
+                try {
+                    MapFileHandler.saveMap(map, file.toString());
+                } catch (ParserConfigurationException ex) {
+                    ex.printStackTrace();
+                } catch (TransformerException ex) {
+                    ex.printStackTrace();
+                }
             }
             System.out.println(map);
         });
 
 
-
         openButton.setOnAction(
                 actionEvent -> {
-                    File file = fileChooser.showOpenDialog(stage);
+                    File file = imageChooser.showOpenDialog(stage);
                     if (file != null){
                         Image image = new Image(file.toURI().toString());
                         ImageView imageView = new ImageView(image);

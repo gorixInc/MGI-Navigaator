@@ -7,6 +7,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
+import map.RoadVertex;
 
 import java.util.ArrayList;
 
@@ -31,9 +32,10 @@ public class AddJunction implements EventHandler<MouseEvent> {
     private void constructVertex(double x, double y, Pane group){
         Circle vertex = drawVertex(x, y);
         if(vertex != null) {
-            GraphicalVertex gv = new GraphicalVertex(graphicalVertices.size(), x, y, vertex);
+            RoadVertex roadVertex = new RoadVertex(graphicalVertices.size(), x, y);
+            GraphicalVertex gv = new GraphicalVertex(roadVertex, vertex);
             graphicalVertices.add(gv);
-            group.getChildren().add(gv.graphics);
+            group.getChildren().add(gv.getGraphics());
         }
     }
 
@@ -41,7 +43,7 @@ public class AddJunction implements EventHandler<MouseEvent> {
         boolean vertexExists = false;
         for (GraphicalVertex graphicalVertex : graphicalVertices) {
             Point2D point = new Point2D(x, y);
-            if (graphicalVertex.graphics.contains(point)){
+            if (graphicalVertex.getGraphics().contains(point)){
                 System.out.println("A vertex already exists at that point.");
                 vertexExists = true;
                 break;
