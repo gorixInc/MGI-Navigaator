@@ -40,14 +40,14 @@ public class Main extends Application {
 
         stage.setTitle("GPS");
 
-        stage.setWidth(700);
-        stage.setHeight(500);
+        stage.setWidth(200);
+        stage.setHeight(100);
 
         stage.setX(300);
         stage.setY(100);
 
         HBox root = new HBox();
-        VBox buttons = new VBox();
+        HBox buttons = new HBox();
 
         Button editorButton = new Button("Editor");
         Button viewerButton = new Button("Viewer");
@@ -56,19 +56,10 @@ public class Main extends Application {
 
         BackgroundImage background = new BackgroundImage(image, null, null, null, null);
 
-        Canvas canvas = new Canvas(600, 500);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
         buttons.getChildren().addAll(editorButton, viewerButton);
 
 
-        gc.setFill(Color.WHEAT);
-        gc.fillRect(0, 0, 600, 500);
-
-        Pane map = new Pane(canvas);
-
         root.getChildren().add(buttons);
-        root.getChildren().add(map);
 
         Scene scene1 = new Scene(root);
 

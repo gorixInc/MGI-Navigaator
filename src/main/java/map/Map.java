@@ -50,7 +50,7 @@ public class Map {
      * @param v1
      * @param v2
      */
-    void removerRoad(RoadVertex v1, RoadVertex v2){
+    public void removeRoad(RoadVertex v1, RoadVertex v2){
         mapGraph.removeNonDirectedEdge(v1,v2);
     }
 
