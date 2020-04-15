@@ -9,6 +9,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AddRoad implements EventHandler<MouseEvent> {
 
@@ -18,6 +19,11 @@ public class AddRoad implements EventHandler<MouseEvent> {
     private ArrayList<GraphicalEdge> edgesGraphics;
     private boolean twoWay;
     private String roadType;
+    private HashMap<String, Integer> roadTypes = new HashMap<String, Integer>(){{
+        put("Motorway", 1);
+        put("Pedestrian", 2);
+        put("Railway", 3);
+    }};
 
     public void setRoadType(String roadType) {
         this.roadType = roadType;
@@ -56,9 +62,9 @@ public class AddRoad implements EventHandler<MouseEvent> {
                         double secondX = graphicalVertex.getRoadVertex().posX;
                         double secondY = graphicalVertex.getRoadVertex().posY;
                         if (twoWay) {
-                            graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), new Integer[]{1});
+                            graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), new Integer[]{roadTypes.get(roadType)});
                         } else {
-                            graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), new Integer[]{1});
+                            graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), new Integer[]{roadTypes.get(roadType)});
                         }
                         GraphicalEdge gEdge = new GraphicalEdge(drawEdge(firstX, firstY, secondX, secondY, map),firstClick, graphicalVertex.getRoadVertex());
                         edgesGraphics.add(gEdge);

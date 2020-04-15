@@ -42,7 +42,7 @@ public class MapEditor {
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("File");
         HBox topToolbar = new HBox();
-        HBox topBar = new HBox();
+        VBox topBar = new VBox();
         VBox controls = new VBox();
         controls.setStyle("-fx-background-color: #d4d4d4;");
         Pane canvas = new Pane();
@@ -66,13 +66,13 @@ public class MapEditor {
         zoomSlider.valueProperty().addListener((observableValue, number, t1) -> zoomValue.setText(String.format("%.0f",zoomSlider.getValue() * 100) + "%"));
 
         ObservableList<String> roadOptions = FXCollections.observableArrayList(
-                "Vehicle road",
-                "Pedestrian road",
-                "Railroad"
+                "Motorway",
+                "Pedestrian",
+                "Railway"
         );
 
         ComboBox roadChoice = new ComboBox(roadOptions);
-        roadChoice.setValue("Vehicle road");
+        roadChoice.setValue("Motorway");
 
         CheckBox twoWay = new CheckBox("Two way?");
 
@@ -142,7 +142,10 @@ public class MapEditor {
                     AddRoad addRoad = new AddRoad(canvas, graphicalVertices, map, edgesGraphics, twoWay.isSelected(), roadChoice.getValue().toString());
                     Deleter deleter = new Deleter(graphicalVertices, edgesGraphics, map, canvas);
 
-                    addVertexButton.setOnAction(mouseEvent -> canvas.setOnMouseClicked(addJunction));
+                    addVertexButton.setOnAction(mouseEvent -> {
+                        canvas.setOnMouseClicked(addJunction);
+                        topToolbar.getChildren().clear();
+                    });
 
                     addEdgesButton.setOnAction(mouseEvent -> {
                         canvas.setOnMouseClicked(addRoad);
@@ -150,7 +153,10 @@ public class MapEditor {
                         topToolbar.getChildren().add(roadChoice);
                     });
 
-                    deleteButton.setOnAction(mouseEvent -> canvas.setOnMouseClicked(deleter));
+                    deleteButton.setOnAction(mouseEvent -> {
+                        canvas.setOnMouseClicked(deleter);
+                        topToolbar.getChildren().clear();
+                    });
 
                     twoWay.setOnAction(checboxEvent -> addRoad.updateCheckbox(twoWay.isSelected()));
 

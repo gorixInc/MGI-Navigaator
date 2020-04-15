@@ -12,6 +12,7 @@ import map.*;
 import graph.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -24,10 +25,24 @@ public class FindPath implements EventHandler<MouseEvent> {
     private ArrayList<Circle> pathVertices = new ArrayList<>();
     private ArrayList<Line> pathEdges = new ArrayList<>();
 
-    public FindPath(Pane pane, ArrayList<GraphicalVertex> graphicalVertices, Dijkstra dijkstra) {
+    private String roadType;
+
+    private HashMap<String, Integer> roadTypes = new HashMap<String, Integer>(){{
+        put("Motorway", 1);
+        put("Pedestrian", 2);
+        put("Railway", 3);
+    }};
+
+    public void setRoadType(String roadType) {
+        this.roadType = roadType;
+        System.out.println(roadType);
+    }
+
+    public FindPath(Pane pane, ArrayList<GraphicalVertex> graphicalVertices, Dijkstra dijkstra, String roadType) {
         this.pane = pane;
         this.graphicalVertices = graphicalVertices;
         this.dijkstra = dijkstra;
+        this.roadType = roadType;
     }
 
     boolean first = true;
@@ -47,7 +62,7 @@ public class FindPath implements EventHandler<MouseEvent> {
             } else {
                 for (GraphicalVertex graphicalVertex : graphicalVertices) {
                     if (graphicalVertex.getGraphics().contains(point)) {
-                        Route route = dijkstra.getRoute(firstClick.getRoadVertex(), graphicalVertex.getRoadVertex());
+                        Route route = dijkstra.getRouteWithRestrictions(firstClick.getRoadVertex(), graphicalVertex.getRoadVertex(), new Integer[]{roadTypes.get(roadType)});
                         drawPath(route, pane);
                         first = true;
                         break;
