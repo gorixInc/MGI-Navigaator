@@ -4,6 +4,8 @@ import graph.Dijkstra;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -29,7 +31,7 @@ public class MapViewer {
     ArrayList<Line> edgesGraphics = new ArrayList<>();
     Map map;
 
-    public void viewWindow() throws IOException, SAXException, ParserConfigurationException {
+    public void viewWindow(){
         Stage stage = new Stage();
         stage.setTitle("Map Viewer");
         stage.setWidth(1280);
@@ -40,24 +42,23 @@ public class MapViewer {
 
         BorderPane window = new BorderPane();
 
-        Menu fileMenu = new Menu("File");
-        MenuBar menuBar = new MenuBar();
-        MenuItem loadMap = new MenuItem("Load map");
-        MenuItem loadImage = new MenuItem("Load image");
-        menuBar.getMenus().add(fileMenu);
-        fileMenu.getItems().addAll(loadImage, loadMap);
-
-        HBox topToolbar = new HBox();
         VBox topBar = new VBox();
 
-        topBar.getChildren().addAll(menuBar, topToolbar);
+        MenuBar menuBar = new MenuBar();
+        Menu fileMenu = new Menu("File");
+        MenuItem loadMap = new MenuItem("Load map");
+        MenuItem loadImage = new MenuItem("Load image");
+        fileMenu.getItems().addAll(loadImage, loadMap);
+        menuBar.getMenus().add(fileMenu);
+
+
+        HBox topToolbar = new HBox();
 
         ObservableList<String> roadOptions = FXCollections.observableArrayList(
                 "Motorway",
                 "Pedestrian",
                 "Railway"
         );
-
         ComboBox roadChoice = new ComboBox(roadOptions);
         roadChoice.setValue("Motorway");
 
@@ -65,11 +66,33 @@ public class MapViewer {
 
         Pane canvas = new Pane();
 
-        VBox buttons = new VBox();
+        VBox controls = new VBox();
+        controls.setStyle("-fx-background-color: #d4d4d4;");
 
-        window.setTop(topBar);
-        window.setLeft(buttons);
+        VBox rightSlider = new VBox();
+        rightSlider.setStyle("-fx-background-color: #d4d4d4;");
+
+        Slider zoomSlider = new Slider(0.25, 2, 1);
+        zoomSlider.setOrientation(Orientation.VERTICAL);
+        zoomSlider.setShowTickMarks(true);
+        zoomSlider.setPrefHeight(stage.getHeight()*0.75);
+
+        Label zoomValue = new Label(zoomSlider.getValue() * 100 + "%");
+        zoomSlider.valueProperty().addListener((observableValue, number, t1) -> {
+            zoomValue.setText(String.format("%.0f",zoomSlider.getValue() * 100) + "%");
+            canvas.setScaleX(zoomSlider.getValue());
+            canvas.setScaleY(zoomSlider.getValue());
+        });
+
         window.setCenter(canvas);
+        window.setTop(topBar);
+        window.setLeft(controls);
+        window.setRight(rightSlider);
+
+
+        topBar.getChildren().addAll(menuBar, topToolbar);
+
+        stage.setScene(new Scene(window));
 
         FileChooser loadChooser = new FileChooser();
         loadChooser.setTitle("Load MAP file");
@@ -89,16 +112,21 @@ public class MapViewer {
             if (file != null) {
                 try {
                     map = MapFileHandler.openMap(file.toString());
-                    buttons.getChildren().clear();
+                    controls.getChildren().clear();
                     topToolbar.getChildren().clear();
+                    rightSlider.getChildren().clear();
                     clearMap(canvas);
                     Dijkstra dijkstra = new Dijkstra(map.getGraph());
                     readMap(map, canvas);
                     FindPath findPath = new FindPath(canvas, graphicalVertices, dijkstra, roadChoice.getValue().toString());
                     findPathButton.setOnAction(e1 -> canvas.setOnMouseClicked(findPath));
-                    buttons.getChildren().addAll(findPathButton);
+                    controls.getChildren().addAll(findPathButton);
                     roadChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) -> findPath.setRoadType(t1));
                     topToolbar.getChildren().add(roadChoice);
+                    rightSlider.getChildren().addAll(zoomValue, zoomSlider);
+                    rightSlider.setSpacing(10);
+                    rightSlider.setPadding(new Insets(10,10,10,10));
+                    rightSlider.setMinWidth(80);
                 } catch (ParserConfigurationException ex) {
                     ex.printStackTrace();
                 } catch (IOException ex) {
@@ -116,16 +144,13 @@ public class MapViewer {
                 Image image = new Image(file.toURI().toString());
                 ImageView imageView = new ImageView(image);
                 imageView.setPreserveRatio(true);
-                imageView.setFitHeight(480);
-                imageView.setFitWidth(960);
+                imageView.setFitHeight(image.getHeight());
+                imageView.setFitWidth(image.getWidth());
                 canvas.getChildren().add(imageView);
             }
         });
 
-        stage.setScene(new Scene(window));
         stage.show();
-
-
     }
 
     private void readMap(Map map, Pane canvas) {
@@ -154,5 +179,4 @@ public class MapViewer {
         graphicalVertices.clear();
         edgesGraphics.clear();
     }
-
 }

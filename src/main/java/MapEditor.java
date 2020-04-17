@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import map.*;
 import frontEnd.eventHandler.AddRoad;
@@ -46,8 +47,8 @@ public class MapEditor {
         VBox controls = new VBox();
         controls.setStyle("-fx-background-color: #d4d4d4;");
         Pane canvas = new Pane();
-        canvas.setStyle("-fx-border-style: solid inside;");
         VBox rightSlider = new VBox();
+        rightSlider.setStyle("-fx-background-color: #d4d4d4;");
 
         MenuItem newFile = new MenuItem("New");
         MenuItem saveFile = new MenuItem("Save");
@@ -63,7 +64,11 @@ public class MapEditor {
         zoomSlider.setPrefHeight(stage.getHeight()*0.75);
 
         Label zoomValue = new Label(zoomSlider.getValue() * 100 + "%");
-        zoomSlider.valueProperty().addListener((observableValue, number, t1) -> zoomValue.setText(String.format("%.0f",zoomSlider.getValue() * 100) + "%"));
+        zoomSlider.valueProperty().addListener((observableValue, number, t1) -> {
+            zoomValue.setText(String.format("%.0f",zoomSlider.getValue() * 100) + "%");
+            canvas.setScaleX(zoomSlider.getValue());
+            canvas.setScaleY(zoomSlider.getValue());
+        });
 
         ObservableList<String> roadOptions = FXCollections.observableArrayList(
                 "Motorway",
@@ -90,9 +95,9 @@ public class MapEditor {
         );
 
 
+        window.setCenter(canvas);
         window.setTop(topBar);
         window.setLeft(controls);
-        window.setCenter(canvas);
         window.setRight(rightSlider);
 
         rightSlider.getChildren().addAll(zoomValue, zoomSlider);
@@ -135,8 +140,10 @@ public class MapEditor {
                     Image image = new Image(file.toURI().toString());
                     ImageView imageView = new ImageView(image);
                     imageView.setPreserveRatio(true);
-                    imageView.setFitHeight(480);
-                    imageView.setFitWidth(960);
+                    imageView.setFitHeight(image.getHeight());
+                    imageView.setFitWidth(image.getWidth());
+
+                    canvas.getChildren().add(imageView);
 
                     AddJunction addJunction = new AddJunction(canvas, graphicalVertices);
                     AddRoad addRoad = new AddRoad(canvas, graphicalVertices, map, edgesGraphics, twoWay.isSelected(), roadChoice.getValue().toString());
@@ -163,8 +170,6 @@ public class MapEditor {
                     roadChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) -> addRoad.setRoadType(t1));
 
                     controls.getChildren().addAll(drag, addVertexButton, twoWay, addEdgesButton, deleteButton);
-
-                    canvas.getChildren().add(imageView);
                 }
             });
 
