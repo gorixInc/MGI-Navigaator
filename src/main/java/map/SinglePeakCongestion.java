@@ -17,7 +17,11 @@ public class SinglePeakCongestion extends CongestionFunction {
     }
 
     public double getMultiplier(double timeMins){
-        return (width*10*(1/minMultiplier-1))/(Math.pow((timeMins-peakTime), 2) + width * 10) + 1; //https://www.desmos.com/calculator/jibvt5akbp
+        double multiplier = (width*10*(1/minMultiplier-1))/(Math.pow((timeMins-peakTime), 2) + width * 10) + 1; //https://www.desmos.com/calculator/jibvt5akbp
+        if(multiplier > 0.9){
+            multiplier = 1;
+        }
+        return multiplier;
     }
 
     public Double getPeakTime() {
