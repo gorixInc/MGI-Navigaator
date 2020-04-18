@@ -3,7 +3,6 @@ package map;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import javax.xml.parsers.DocumentBuilder;
@@ -31,7 +30,7 @@ public class MapFileHandler {
      * @throws IOException
      * @throws SAXException
      */
-    public static Map openMap(String path) throws ParserConfigurationException, IOException, SAXException {
+    public static Map openMap(String path) throws Exception {
         File file = new File(path);
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -46,7 +45,7 @@ public class MapFileHandler {
         return map;
     }
 
-    private static void parseForGraph(Document document, Map map){
+    private static void parseForGraph(Document document, Map map) throws Exception {
         Element graph = (Element) document.getElementsByTagName("graph").item(0);
         NodeList vertices = graph.getElementsByTagName("vertex");
         HashMap<Integer, RoadVertex> tempVertexHashMap = new HashMap<>();
@@ -74,9 +73,17 @@ public class MapFileHandler {
                 for(int k = 0; k < tags.length; k++){
                     tags[k] = Integer.parseInt(allowedTags.item(k).getTextContent());
                 }
-
+                Element congFuncNode = (Element) thisEdge.getElementsByTagName("congestionfunction").item(0);
+                int congFuncType = Integer.parseInt(congFuncNode.getElementsByTagName("type").item(0).getTextContent());
+                CongestionFunction congestionFunction = new NoCongestion();
+                if(congFuncType ==1){
+                    Double peakTime = Double.parseDouble(congFuncNode.getElementsByTagName("peaktime").item(0).getTextContent());
+                    Double minMultiplier = Double.parseDouble(congFuncNode.getElementsByTagName("minmultiplier").item(0).getTextContent());
+                    Double width = Double.parseDouble(congFuncNode.getElementsByTagName("width").item(0).getTextContent());
+                    congestionFunction = new SinglePeakCongestion(peakTime, minMultiplier, width);
+                }
                 map.addOneWayRoad(tempVertexHashMap.get(thisVertIndex), tempVertexHashMap.get(destinationIndex)
-                        , thisEdgeWeight, tags);
+                        , thisEdgeWeight, tags, congestionFunction);
             }
         }
     }
@@ -144,26 +151,58 @@ public class MapFileHandler {
         vertexEl.appendChild(posY);
 
         for(RoadEdge edge: edgeList){
-            Element edgeEl = doc.createElement("edge");
-            Element destID = doc.createElement("destinationIndex");
-            Element weight = doc.createElement("weight");
-            Element allowedTags = doc.createElement("allowedtags");
-
-            for(Integer tag: edge.getAllowedTags()){
-                Element tagEl = doc.createElement("tag");
-                tagEl.appendChild(doc.createTextNode(tag.toString()));
-                allowedTags.appendChild(tagEl);
-            }
-
-            destID.appendChild(doc.createTextNode(edge.getDestination().index.toString()));
-            weight.appendChild(doc.createTextNode(edge.getWeight().toString()));
-
-            edgeEl.appendChild(destID);
-            edgeEl.appendChild(weight);
-            edgeEl.appendChild(allowedTags);
-
-            vertexEl.appendChild(edgeEl);
+            vertexEl.appendChild(createEdgeNode(doc, edge));
         }
         return vertexEl;
+    }
+
+    private static Node createEdgeNode(Document doc, RoadEdge edge){
+        Element edgeEl = doc.createElement("edge");
+        Element destID = doc.createElement("destinationIndex");
+        Element weight = doc.createElement("weight");
+        Element allowedTags = doc.createElement("allowedtags");
+        Element congFuncEl = doc.createElement("congestionfunction");
+        Element funcType = doc.createElement("type");
+
+
+        for(Integer tag: edge.getAllowedTags()){
+            Element tagEl = doc.createElement("tag");
+            tagEl.appendChild(doc.createTextNode(tag.toString()));
+            allowedTags.appendChild(tagEl);
+        }
+
+        congFuncEl.appendChild(funcType);
+
+        if(edge.getCongestionFunction() instanceof NoCongestion){
+            funcType.appendChild(doc.createTextNode("0"));
+        }
+        if(edge.getCongestionFunction() instanceof SinglePeakCongestion){
+            funcType.appendChild(doc.createTextNode("1"));
+
+            Element peakTimeEl = doc.createElement("peaktime");
+            Element minMultiplierEl = doc.createElement("minmultiplier");
+            Element widthEl = doc.createElement("width");
+
+            peakTimeEl.appendChild(doc.createTextNode(((SinglePeakCongestion) edge.getCongestionFunction())
+                    .getPeakTime().toString()));
+            minMultiplierEl.appendChild(doc.createTextNode(((SinglePeakCongestion) edge.getCongestionFunction())
+                    .getMinMultiplier().toString()));
+            widthEl.appendChild(doc.createTextNode(((SinglePeakCongestion) edge.getCongestionFunction())
+                    .getWidth().toString()));
+
+            congFuncEl.appendChild(peakTimeEl);
+            congFuncEl.appendChild(minMultiplierEl);
+            congFuncEl.appendChild(widthEl);
+        }
+
+
+        destID.appendChild(doc.createTextNode(edge.getDestination().index.toString()));
+        weight.appendChild(doc.createTextNode(edge.getBaseWeight().toString()));
+
+        edgeEl.appendChild(destID);
+        edgeEl.appendChild(weight);
+        edgeEl.appendChild(allowedTags);
+        edgeEl.appendChild(congFuncEl);
+        return edgeEl;
     }
 }
