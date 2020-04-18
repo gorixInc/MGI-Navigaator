@@ -2,9 +2,9 @@ package frontEnd.eventHandler;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import map.GraphicalEdge;
 import map.GraphicalVertex;
 import map.Map;
@@ -17,9 +17,9 @@ public class Deleter implements EventHandler<MouseEvent> {
     private ArrayList<GraphicalVertex> graphicalVertices;
     private ArrayList<GraphicalEdge> edgesGraphics;
     private Map graph;
-    private Pane canvas;
+    private Group canvas;
 
-    public Deleter(ArrayList<GraphicalVertex> graphicalVertices, ArrayList<GraphicalEdge> edgesGraphics, Map graph, Pane canvas) {
+    public Deleter(ArrayList<GraphicalVertex> graphicalVertices, ArrayList<GraphicalEdge> edgesGraphics, Map graph, Group canvas) {
         this.graphicalVertices = graphicalVertices;
         this.edgesGraphics = edgesGraphics;
         this.graph = graph;

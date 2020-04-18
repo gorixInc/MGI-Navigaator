@@ -1,11 +1,10 @@
 import frontEnd.eventHandler.Deleter;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
+import javafx.scene.Group;
 import javafx.scene.control.*;
 import map.*;
 import frontEnd.eventHandler.AddRoad;
@@ -14,7 +13,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -46,7 +44,8 @@ public class MapEditor {
         VBox topBar = new VBox();
         VBox controls = new VBox();
         controls.setStyle("-fx-background-color: #d4d4d4;");
-        Pane canvas = new Pane();
+        Pane centerWindow = new Pane();
+        Group canvas = new Group();
         VBox rightSlider = new VBox();
         rightSlider.setStyle("-fx-background-color: #d4d4d4;");
 
@@ -95,10 +94,12 @@ public class MapEditor {
         );
 
 
-        window.setCenter(canvas);
+        window.setCenter(centerWindow);
         window.setTop(topBar);
         window.setLeft(controls);
         window.setRight(rightSlider);
+
+        centerWindow.getChildren().add(canvas);
 
         rightSlider.getChildren().addAll(zoomValue, zoomSlider);
         rightSlider.setSpacing(10);
@@ -115,6 +116,8 @@ public class MapEditor {
         fileMenu.getItems().addAll(newFile, saveFile);
 
         saveFile.setOnAction(e ->{
+            canvas.setOnMousePressed(null);
+            canvas.setOnMouseDragged(null);
             canvas.setOnMouseClicked(null);
             File file = saveChooser.showSaveDialog(stage);
             if (file != null){
@@ -145,24 +148,41 @@ public class MapEditor {
 
                     canvas.getChildren().add(imageView);
 
+
                     AddJunction addJunction = new AddJunction(canvas, graphicalVertices);
                     AddRoad addRoad = new AddRoad(canvas, graphicalVertices, map, edgesGraphics, twoWay.isSelected(), roadChoice.getValue().toString());
                     Deleter deleter = new Deleter(graphicalVertices, edgesGraphics, map, canvas);
 
                     addVertexButton.setOnAction(mouseEvent -> {
+                        canvas.setOnMousePressed(null);
+                        canvas.setOnMouseDragged(null);
                         canvas.setOnMouseClicked(addJunction);
                         topToolbar.getChildren().clear();
                     });
 
                     addEdgesButton.setOnAction(mouseEvent -> {
+                        canvas.setOnMousePressed(null);
+                        canvas.setOnMouseDragged(null);
                         canvas.setOnMouseClicked(addRoad);
                         topToolbar.getChildren().clear();
                         topToolbar.getChildren().add(roadChoice);
                     });
 
                     deleteButton.setOnAction(mouseEvent -> {
+                        canvas.setOnMousePressed(null);
+                        canvas.setOnMouseDragged(null);
                         canvas.setOnMouseClicked(deleter);
                         topToolbar.getChildren().clear();
+                    });
+
+                    drag.setOnAction(mouseEvent ->{
+                        canvas.setOnMouseClicked(null);
+                        canvas.setOnMousePressed(presser ->{
+                            canvas.setOnMouseDragged(dragger ->{
+                                canvas.setTranslateX(dragger.getX() - presser.getX() + canvas.getTranslateX());
+                                canvas.setTranslateY(dragger.getY() - presser.getY() + canvas.getTranslateY());
+                            });
+                        });
                     });
 
                     twoWay.setOnAction(checboxEvent -> addRoad.updateCheckbox(twoWay.isSelected()));

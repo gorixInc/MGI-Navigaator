@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -63,8 +64,10 @@ public class MapViewer {
         roadChoice.setValue("Motorway");
 
         Button findPathButton = new Button("Find");
+        Button dragButton = new Button("Drag");
 
-        Pane canvas = new Pane();
+        Pane centerWindow = new Pane();
+        Group canvas = new Group();
 
         VBox controls = new VBox();
         controls.setStyle("-fx-background-color: #d4d4d4;");
@@ -84,10 +87,12 @@ public class MapViewer {
             canvas.setScaleY(zoomSlider.getValue());
         });
 
-        window.setCenter(canvas);
+        window.setCenter(centerWindow);
         window.setTop(topBar);
         window.setLeft(controls);
         window.setRight(rightSlider);
+
+        centerWindow.getChildren().add(canvas);
 
 
         topBar.getChildren().addAll(menuBar, topToolbar);
@@ -119,8 +124,21 @@ public class MapViewer {
                     Dijkstra dijkstra = new Dijkstra(map.getGraph());
                     readMap(map, canvas);
                     FindPath findPath = new FindPath(canvas, graphicalVertices, dijkstra, roadChoice.getValue().toString());
-                    findPathButton.setOnAction(e1 -> canvas.setOnMouseClicked(findPath));
-                    controls.getChildren().addAll(findPathButton);
+                    findPathButton.setOnAction(e1 -> {
+                        canvas.setOnMousePressed(null);
+                        canvas.setOnMouseDragged(null);
+                        canvas.setOnMouseClicked(findPath);
+                    });
+                    dragButton.setOnAction(mouseEvent ->{
+                        canvas.setOnMouseClicked(null);
+                        canvas.setOnMousePressed(presser ->{
+                            canvas.setOnMouseDragged(dragger ->{
+                                canvas.setTranslateX(dragger.getX() - presser.getX() + canvas.getTranslateX());
+                                canvas.setTranslateY(dragger.getY() - presser.getY() + canvas.getTranslateY());
+                            });
+                        });
+                    });
+                    controls.getChildren().addAll(dragButton, findPathButton);
                     roadChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) -> findPath.setRoadType(t1));
                     topToolbar.getChildren().add(roadChoice);
                     rightSlider.getChildren().addAll(zoomValue, zoomSlider);
@@ -153,7 +171,7 @@ public class MapViewer {
         stage.show();
     }
 
-    private void readMap(Map map, Pane canvas) {
+    private void readMap(Map map, Group canvas) {
         for (RoadVertex vertex : map.getGraph().getVertices()) {
             RoadVertex rVertex = vertex;
             Circle circle = new Circle(rVertex.posX, rVertex.posY, 5);
@@ -173,7 +191,7 @@ public class MapViewer {
         edgesGraphics.forEach(edge -> canvas.getChildren().add(edge));
     }
 
-    private void clearMap(Pane canvas){
+    private void clearMap(Group canvas){
         graphicalVertices.forEach(gv -> canvas.getChildren().remove(gv.getGraphics()));
         edgesGraphics.forEach(edge -> canvas.getChildren().remove(edge));
         graphicalVertices.clear();

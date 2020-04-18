@@ -1,11 +1,11 @@
 package frontEnd.eventHandler;
 
+import javafx.scene.Group;
 import map.*;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public class AddRoad implements EventHandler<MouseEvent> {
 
-    private Pane map;
+    private Group canvas;
     private ArrayList<GraphicalVertex> graphicalVertices;
     private Map graph;
     private ArrayList<GraphicalEdge> edgesGraphics;
@@ -30,8 +30,8 @@ public class AddRoad implements EventHandler<MouseEvent> {
         System.out.println(roadType);
     }
 
-    public AddRoad(Pane map, ArrayList<GraphicalVertex> graphicalVertices, Map graph, ArrayList<GraphicalEdge> edgesGraphics, boolean twoWay, String roadType) {
-        this.map = map;
+    public AddRoad(Group canvas, ArrayList<GraphicalVertex> graphicalVertices, Map graph, ArrayList<GraphicalEdge> edgesGraphics, boolean twoWay, String roadType) {
+        this.canvas = canvas;
         this.graphicalVertices = graphicalVertices;
         this.graph = graph;
         this.edgesGraphics = edgesGraphics;
@@ -66,7 +66,7 @@ public class AddRoad implements EventHandler<MouseEvent> {
                         } else {
                             graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), new Integer[]{roadTypes.get(roadType)});
                         }
-                        GraphicalEdge gEdge = new GraphicalEdge(drawEdge(firstX, firstY, secondX, secondY, map),firstClick, graphicalVertex.getRoadVertex());
+                        GraphicalEdge gEdge = new GraphicalEdge(drawEdge(firstX, firstY, secondX, secondY, canvas),firstClick, graphicalVertex.getRoadVertex());
                         edgesGraphics.add(gEdge);
                         first = true;
                         break;
@@ -80,7 +80,7 @@ public class AddRoad implements EventHandler<MouseEvent> {
         this.twoWay = twoWay;
     }
 
-    private Line drawEdge(double x1, double y1, double x2, double y2, Pane group) {
+    private Line drawEdge(double x1, double y1, double x2, double y2, Group group) {
         Line edge = new Line(x1, y1, x2, y2);
         edge.setStrokeWidth(2);
         group.getChildren().add(edge);
