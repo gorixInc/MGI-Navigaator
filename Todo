@@ -1,7 +1,8 @@
-Transition to using Map class instead of Graph class in Main
+Transition to using Map class instead of Graph class in Main (+)
 Improve UI, add ability to remove elements (+), setting scale... more things to come (In progress: Indrek)
 Implement map saving (+)
 Separate into two apps (in progress?)
 Implement traffic simulation (+)
 Implement different types of roads (pedestrian, motorways, railways??)(+)
+Allow finding path by clicking on roads instead of junctions only
 Add more items here
