@@ -74,6 +74,29 @@ public class Dijkstra {
     }
 
     /**
+     * Creates a Route object that represents a path between origin and destination vertices.
+     * The route is created using only roads whose tags intersect with tags in allowed;
+     * Congestion is considered when choosing the route.
+     * @param origin Origin vertex
+     * @param destination Destination veretx
+     * @param allowed tags, which roads can we use?
+     * @param startTime Staring time of the route in minutes since midnight
+     * @return
+     */
+    public Route getRouteWithRestrictions(RoadVertex origin, RoadVertex destination, Integer[] allowed, double startTime){
+        reset();
+        prevVertexAndDistanceTable.put(origin, new PrevVertexAndDistance(origin, 0));
+        recursiveDijkstra(origin, Arrays.asList(allowed), startTime);
+        createPathRecursively(destination);
+        double pathLength = prevVertexAndDistanceTable.get(destination).totalWeight;
+        if(path.size() == 1 && pathLength > 0){
+            return new Route(null, -1);
+        }
+        Collections.reverse(path);
+        return new Route(path, pathLength);
+    }
+
+    /**
      * Updates the path List<RoadVertex> recursively from the origin vector,in prevVertexAndDistance to the vector passed
      * in the first step
      *
@@ -101,7 +124,7 @@ public class Dijkstra {
         unvisited.remove(v);
         for (RoadEdge edge : adjacencyMap.get(v)) {
             RoadVertex adjVertex = edge.getDestination();
-            double localWeight = edge.getWeight();
+            double localWeight = edge.getBaseWeight();
             double newSumWeight = localWeight + currentDistance;
             if (newSumWeight < prevVertexAndDistanceTable.get(adjVertex).totalWeight) {
                 prevVertexAndDistanceTable.put(adjVertex, new PrevVertexAndDistance(v, newSumWeight));
@@ -113,8 +136,12 @@ public class Dijkstra {
         RoadVertex nextVertex = Collections.min(unvisited, new EdgeComparator(prevVertexAndDistanceTable));
         recursiveDijkstra(nextVertex);
     }
-
-
+    /**
+     * Updates prevVertAndDistance HashMap with distances from the first vertex passed to each vector in the graph,
+     * uses only edges with if edge tags and allowed tags have mutual elements.
+     * @param v vertex
+     * @param allowedTags list of tags that this route can use
+     */
     private void recursiveDijkstra(RoadVertex v, List<Integer> allowedTags) {
         double currentDistance = prevVertexAndDistanceTable.get(v).totalWeight;
         unvisited.remove(v);
@@ -130,7 +157,7 @@ public class Dijkstra {
             if(!valid) continue;
 
             RoadVertex adjVertex = edge.getDestination();
-            double localWeight = edge.getWeight();
+            double localWeight = edge.getBaseWeight();
             double newSumWeight = localWeight + currentDistance;
             if (newSumWeight < prevVertexAndDistanceTable.get(adjVertex).totalWeight) {
                 prevVertexAndDistanceTable.put(adjVertex, new PrevVertexAndDistance(v, newSumWeight));
@@ -142,6 +169,43 @@ public class Dijkstra {
         RoadVertex nextVertex = Collections.min(unvisited, new EdgeComparator(prevVertexAndDistanceTable));
         recursiveDijkstra(nextVertex, allowedTags);
     }
+
+    /**
+     * Updates prevVertAndDistance HashMap with distances from the first vertex passed to each vector in the graph,
+     * uses only edges with if edge tags and allowed tags have mutual elements.Considers congestion and time already
+     * spent on route.
+     *
+     * @param v vertex
+     * @param allowedTags list of tags that this route can use
+     * @param currentTime time in minutes since midnight at which we start the route
+     */
+    private void recursiveDijkstra(RoadVertex v, List<Integer> allowedTags, double currentTime) {
+        double currentDistance = prevVertexAndDistanceTable.get(v).totalWeight;
+        unvisited.remove(v);
+        for (RoadEdge edge : adjacencyMap.get(v)) {
+            //Checking tags
+            boolean valid = false;
+            for(Integer tag: edge.getAllowedTags()){
+                if(allowedTags.contains(tag)){
+                    valid = true;
+                    break;
+                }
+            }
+            if(!valid) continue;
+            RoadVertex adjVertex = edge.getDestination();
+            double localWeight = edge.getScaledWeight(currentDistance + currentTime); //Considering congestion at the time this edge is reached
+            double newSumWeight = localWeight + currentDistance;
+            if (newSumWeight < prevVertexAndDistanceTable.get(adjVertex).totalWeight) {
+                prevVertexAndDistanceTable.put(adjVertex, new PrevVertexAndDistance(v, newSumWeight));
+            }
+        }
+        if (unvisited.isEmpty()) {
+            return;
+        }
+        RoadVertex nextVertex = Collections.min(unvisited, new EdgeComparator(prevVertexAndDistanceTable));
+        recursiveDijkstra(nextVertex, allowedTags, currentTime);
+    }
+
 
     /**
      * Compares vertices by the shortest distance from origin vertex in prevVertexAndDistance HashMap;
@@ -156,14 +220,7 @@ public class Dijkstra {
             double totalWeight1 = prevVertexAndDistanceTable.get(v1).totalWeight;
             double totalWeight2 = prevVertexAndDistanceTable.get(v2).totalWeight;
 
-            if(totalWeight1 == totalWeight2){
-                return 0;
-            }
-            if(totalWeight1 > totalWeight2){
-                return 1;
-            }else {
-                return -1;
-            }
+            return Double.compare(totalWeight1, totalWeight2);
         }
     }
 

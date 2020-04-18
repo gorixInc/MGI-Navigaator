@@ -105,6 +105,8 @@ public class MapViewer {
                     ex.printStackTrace();
                 } catch (SAXException ex) {
                     ex.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         });

@@ -11,7 +11,9 @@ import java.util.List;
 public class Graph {
     private HashMap<RoadVertex, LinkedList<RoadEdge>> adjacencyMap;
     private List<RoadVertex> vertices;
+    private List<RoadEdge> edges;
     public Graph(){
+        edges = new ArrayList<>();
         this.adjacencyMap = new HashMap<>();
         this.vertices = new ArrayList<>();
     }
@@ -22,14 +24,19 @@ public class Graph {
     public List<RoadVertex> getVertices() {
         return vertices;
     }
+
+    public List<RoadEdge> getEdges() {
+        return edges;
+    }
+
     /**
      * Connects origin vertex to destination vertex with given weight, adds vertices to adjMap if needed.
-     * @param origin
-     * @param destination
-     * @param weight
+     * @param origin origin
+     * @param edge edge to add
      */
-    public void addEdge(RoadVertex origin, RoadVertex destination, double weight, Integer[] allowedTags){
-        RoadEdge edge = new RoadEdge(destination, weight, allowedTags);
+    public void addEdge(RoadVertex origin, RoadEdge edge){
+        RoadVertex destination = edge.getDestination();
+        edges.add(edge);
         if(!adjacencyMap.containsKey(origin)){
             LinkedList<RoadEdge> connectedVertices = new LinkedList<>();
             connectedVertices.add(edge);
@@ -45,15 +52,14 @@ public class Graph {
     }
 
     /**
-     * Adds and edge from v1 to v2, and from v2 to v1
-     * @param v1
-     * @param v2
-     * @param weight
+     * Adds two adds two edges two graph back and forth between two destinations of said edges.
+     * @param edge1
+     * @param edge2
      */
 
-    public void addNonDirectedEdge(RoadVertex v1, RoadVertex v2, double weight, Integer[] allowedTags){
-        addEdge(v1, v2, weight, allowedTags);
-        addEdge(v2, v1, weight, allowedTags);
+    public void addNonDirectedEdge(RoadEdge edge1, RoadEdge edge2){
+        addEdge(edge2.getDestination(), edge1);
+        addEdge(edge1.getDestination(), edge2);
     }
 
 
@@ -63,10 +69,11 @@ public class Graph {
      * @param destination
      */
     public void removeEdge(RoadVertex origin, RoadVertex destination){
-        LinkedList<RoadEdge> edges = adjacencyMap.get(origin);
-        for(RoadEdge edge : edges){
+        LinkedList<RoadEdge> edgesList = adjacencyMap.get(origin);
+        for(RoadEdge edge : edgesList){
             if(edge.getDestination() == destination){
                 edges.remove(edge);
+                edgesList.remove();
                 return;
             }
         }
@@ -87,7 +94,7 @@ public class Graph {
         for(RoadVertex vertex: adjacencyMap.keySet()){
             sb.append(vertex.index).append(" -->");
             for(RoadEdge edge: adjacencyMap.get(vertex)){
-                sb.append("\t{").append(edge.getDestination().index).append(", ").append(edge.getWeight()).append("}");
+                sb.append("\t{").append(edge.getDestination().index).append(", ").append(edge.getBaseWeight()).append("}");
             }
             sb.append('\n');
         }
