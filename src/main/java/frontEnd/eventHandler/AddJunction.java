@@ -1,11 +1,11 @@
 package frontEnd.eventHandler;
 
+import javafx.scene.Group;
 import map.GraphicalVertex;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import map.RoadVertex;
 
@@ -14,22 +14,22 @@ import java.util.ArrayList;
 
 public class AddJunction implements EventHandler<MouseEvent> {
 
-    private Pane map;
+    private Group canvas;
     private ArrayList<GraphicalVertex> graphicalVertices;
 
-    public AddJunction(Pane map, ArrayList<GraphicalVertex> graphicalVertices){
-        this.map = map;
+    public AddJunction(Group canvas, ArrayList<GraphicalVertex> graphicalVertices){
+        this.canvas = canvas;
         this.graphicalVertices = graphicalVertices;
     }
 
     @Override
     public void handle(MouseEvent event) {
         if (event.getButton() == MouseButton.PRIMARY) {
-            constructVertex(event.getX(), event.getY(), map);
+            constructVertex(event.getX(), event.getY(), canvas);
         }
     }
 
-    private void constructVertex(double x, double y, Pane group){
+    private void constructVertex(double x, double y, Group group){
         Circle vertex = drawVertex(x, y);
         if(vertex != null) {
             RoadVertex roadVertex = new RoadVertex(graphicalVertices.size(), x, y);

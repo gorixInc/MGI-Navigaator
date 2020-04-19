@@ -2,9 +2,9 @@ package frontEnd.eventHandler;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class FindPath implements EventHandler<MouseEvent> {
 
-    private Pane pane;
+    private Group canvas;
     private ArrayList<GraphicalVertex> graphicalVertices;
     private Dijkstra dijkstra;
 
@@ -38,8 +38,8 @@ public class FindPath implements EventHandler<MouseEvent> {
         System.out.println(roadType);
     }
 
-    public FindPath(Pane pane, ArrayList<GraphicalVertex> graphicalVertices, Dijkstra dijkstra, String roadType) {
-        this.pane = pane;
+    public FindPath(Group canvas, ArrayList<GraphicalVertex> graphicalVertices, Dijkstra dijkstra, String roadType) {
+        this.canvas = canvas;
         this.graphicalVertices = graphicalVertices;
         this.dijkstra = dijkstra;
         this.roadType = roadType;
@@ -63,7 +63,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                 for (GraphicalVertex graphicalVertex : graphicalVertices) {
                     if (graphicalVertex.getGraphics().contains(point)) {
                         Route route = dijkstra.getRouteWithRestrictions(firstClick.getRoadVertex(), graphicalVertex.getRoadVertex(), new Integer[]{roadTypes.get(roadType)});
-                        drawPath(route, pane);
+                        drawPath(route, canvas);
                         first = true;
                         break;
                     }
@@ -72,7 +72,7 @@ public class FindPath implements EventHandler<MouseEvent> {
         }
     }
 
-    private void drawPath(Route route, Pane pane) {
+    private void drawPath(Route route, Group pane) {
         clearPath();
         if (route.getPathVertices() == null) return;
         List<RoadVertex> pathVertices = route.getPathVertices();
@@ -94,8 +94,8 @@ public class FindPath implements EventHandler<MouseEvent> {
     }
 
     private void clearPath(){
-        pathVertices.forEach(e -> pane.getChildren().remove(e));
-        pathEdges.forEach(e -> pane.getChildren().remove(e));
+        pathVertices.forEach(e -> canvas.getChildren().remove(e));
+        pathEdges.forEach(e -> canvas.getChildren().remove(e));
         pathEdges.clear();
         pathVertices.clear();
     }
