@@ -55,15 +55,7 @@ public class Main extends Application {
 
         viewerButton.setOnAction(e -> {
             MapViewer mapViewer = new MapViewer();
-            try {
-                mapViewer.viewWindow();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } catch (SAXException ex) {
-                ex.printStackTrace();
-            } catch (ParserConfigurationException ex) {
-                ex.printStackTrace();
-            }
+            mapViewer.viewWindow();
         });
 
         stage.show();
