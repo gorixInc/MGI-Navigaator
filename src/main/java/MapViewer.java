@@ -26,10 +26,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapViewer {
-    ArrayList<GraphicalVertex> graphicalVertices = new ArrayList<>();
-    ArrayList<Line> edgesGraphics = new ArrayList<>();
+    List<GraphicalVertex> graphicalVertices = new ArrayList<>();
+    List<GraphicalEdge> edgesGraphics = new ArrayList<>();
     Map map;
 
     public void viewWindow(){
@@ -123,7 +124,7 @@ public class MapViewer {
                     clearMap(canvas);
                     Dijkstra dijkstra = new Dijkstra(map.getGraph());
                     readMap(map, canvas);
-                    FindPath findPath = new FindPath(canvas, graphicalVertices, dijkstra, roadChoice.getValue().toString());
+                    FindPath findPath = new FindPath(canvas, graphicalVertices, edgesGraphics, dijkstra, roadChoice.getValue().toString());
                     findPathButton.setOnAction(e1 -> {
                         canvas.setOnMousePressed(null);
                         canvas.setOnMouseDragged(null);
@@ -186,11 +187,12 @@ public class MapViewer {
                 RoadVertex rVertexEnd = edge.getDestination();
                 Line line = new Line(rVertexStart.posX, rVertexStart.posY, rVertexEnd.posX, rVertexEnd.posY);
                 line.setStrokeWidth(2.5);
-                edgesGraphics.add(line);
+                GraphicalEdge graphicalEdge = new GraphicalEdge(line, rVertexStart, rVertexEnd);
+                edgesGraphics.add(graphicalEdge);
             }
         }
         graphicalVertices.forEach(gv -> canvas.getChildren().add(gv.getGraphics()));
-        edgesGraphics.forEach(edge -> canvas.getChildren().add(edge));
+        edgesGraphics.forEach(edge -> canvas.getChildren().add(edge.getEdge()));
     }
 
     private void clearMap(Group canvas){

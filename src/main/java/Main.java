@@ -8,25 +8,12 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 public class Main extends Application {
 
-    ArrayList<Line> edgesGraphics = new ArrayList<>();
-    ArrayList<GraphicalVertex> graphicalVertices = new ArrayList<>();
-    ArrayList<Line> routeEdges = new ArrayList<>();
-    ArrayList<Circle> routeVertices = new ArrayList<>();
-    Graph graph;
-    Dijkstra dijkstra;
-
-
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage){
 
         stage.setTitle("GPS");
 
