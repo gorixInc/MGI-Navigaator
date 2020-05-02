@@ -17,6 +17,11 @@ public class RoadVertex{
         this.posX = x;
         this.posY = y;
     }
+
+    public Integer getIndex() {
+        return index;
+    }
+
     @Override
     public String toString(){
         return "RoadVertex with index: " + index.toString();

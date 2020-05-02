@@ -20,11 +20,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapEditor {
 
-    ArrayList<GraphicalVertex> graphicalVertices = new ArrayList<>();
-    ArrayList<GraphicalEdge> edgesGraphics = new ArrayList<>();
+    List<GraphicalVertex> graphicalVertices = new ArrayList<>();
+    List<GraphicalEdge> edgesGraphics = new ArrayList<>();
     Map map;
 
     public void editWindow() {

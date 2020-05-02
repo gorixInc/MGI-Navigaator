@@ -124,7 +124,7 @@ public class MapViewer {
                     clearMap(canvas);
                     Dijkstra dijkstra = new Dijkstra(map.getGraph());
                     readMap(map, canvas);
-                    FindPath findPath = new FindPath(canvas, graphicalVertices, edgesGraphics, dijkstra, roadChoice.getValue().toString());
+                    FindPath findPath = new FindPath(canvas, graphicalVertices, edgesGraphics, dijkstra, roadChoice.getValue().toString(), map.getGraph());
                     findPathButton.setOnAction(e1 -> {
                         canvas.setOnMousePressed(null);
                         canvas.setOnMouseDragged(null);

@@ -11,15 +11,16 @@ import map.Map;
 import map.RoadEdge;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Deleter implements EventHandler<MouseEvent> {
 
-    private ArrayList<GraphicalVertex> graphicalVertices;
-    private ArrayList<GraphicalEdge> edgesGraphics;
+    private List<GraphicalVertex> graphicalVertices;
+    private List<GraphicalEdge> edgesGraphics;
     private Map graph;
     private Group canvas;
 
-    public Deleter(ArrayList<GraphicalVertex> graphicalVertices, ArrayList<GraphicalEdge> edgesGraphics, Map graph, Group canvas) {
+    public Deleter(List<GraphicalVertex> graphicalVertices, List<GraphicalEdge> edgesGraphics, Map graph, Group canvas) {
         this.graphicalVertices = graphicalVertices;
         this.edgesGraphics = edgesGraphics;
         this.graph = graph;
