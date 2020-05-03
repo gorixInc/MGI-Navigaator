@@ -5,4 +5,6 @@ Separate into two apps (in progress?)
 Implement traffic simulation (+)
 Implement different types of roads (pedestrian, motorways, railways??)(+)
 Allow finding path by clicking on roads instead of junctions only
+Display travel time when finding a route
+Implement congestion into editor and viewer
 Add more items here

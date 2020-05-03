@@ -10,13 +10,14 @@ import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AddRoad implements EventHandler<MouseEvent> {
 
     private Group canvas;
-    private ArrayList<GraphicalVertex> graphicalVertices;
+    private List<GraphicalVertex> graphicalVertices;
     private Map graph;
-    private ArrayList<GraphicalEdge> edgesGraphics;
+    private List<GraphicalEdge> edgesGraphics;
     private boolean twoWay;
     private String roadType;
     private HashMap<String, Integer> roadTypes = new HashMap<String, Integer>(){{
@@ -30,8 +31,7 @@ public class AddRoad implements EventHandler<MouseEvent> {
         System.out.println(roadType);
     }
 
-    public AddRoad(Group canvas, ArrayList<GraphicalVertex> graphicalVertices, Map graph, ArrayList<GraphicalEdge>
-            edgesGraphics, boolean twoWay, String roadType) {
+    public AddRoad(Group canvas, List<GraphicalVertex> graphicalVertices, Map graph, List<GraphicalEdge> edgesGraphics, boolean twoWay, String roadType) {
         this.canvas = canvas;
         this.graphicalVertices = graphicalVertices;
         this.graph = graph;
