@@ -68,11 +68,8 @@ public class MapFileHandler {
                 int destinationIndex = Integer.parseInt(thisEdge.getElementsByTagName("destinationIndex")
                         .item(0).getTextContent());
 
-                NodeList allowedTags = thisEdge.getElementsByTagName("tag");
-                Integer[] tags = new Integer[allowedTags.getLength()];
-                for(int k = 0; k < tags.length; k++){
-                    tags[k] = Integer.parseInt(allowedTags.item(k).getTextContent());
-                }
+                NodeList allowedTag = thisEdge.getElementsByTagName("tag");
+                Integer tag = Integer.parseInt(allowedTag.item(0).getTextContent());
                 Element congFuncNode = (Element) thisEdge.getElementsByTagName("congestionfunction").item(0);
                 int congFuncType = Integer.parseInt(congFuncNode.getElementsByTagName("type").item(0).getTextContent());
                 CongestionFunction congestionFunction = new NoCongestion();
@@ -83,7 +80,7 @@ public class MapFileHandler {
                     congestionFunction = new SinglePeakCongestion(peakTime, minMultiplier, width);
                 }
                 map.addOneWayRoad(tempVertexHashMap.get(thisVertIndex), tempVertexHashMap.get(destinationIndex)
-                        , thisEdgeWeight, tags, congestionFunction);
+                        , thisEdgeWeight, tag, congestionFunction);
             }
         }
     }
@@ -165,11 +162,10 @@ public class MapFileHandler {
         Element funcType = doc.createElement("type");
 
 
-        for(Integer tag: edge.getAllowedTags()){
-            Element tagEl = doc.createElement("tag");
-            tagEl.appendChild(doc.createTextNode(tag.toString()));
-            allowedTags.appendChild(tagEl);
-        }
+        Integer tag = edge.getAllowedTag();
+        Element tagEl = doc.createElement("tag");
+        tagEl.appendChild(doc.createTextNode(tag.toString()));
+        allowedTags.appendChild(tagEl);
 
         congFuncEl.appendChild(funcType);
 

@@ -60,10 +60,10 @@ public class Dijkstra {
      * @param allowed tags, which roads can we use?
      * @return
      */
-    public Route getRouteWithRestrictions(RoadVertex origin, RoadVertex destination, Integer[] allowed){
+    public Route getRouteWithRestrictions(RoadVertex origin, RoadVertex destination, Integer allowed){
         reset();
         prevVertexAndDistanceTable.put(origin, new PrevVertexAndDistance(origin, 0));
-        recursiveDijkstra(origin, Arrays.asList(allowed));
+        recursiveDijkstra(origin, allowed);
         createPathRecursively(destination);
         double pathLength = prevVertexAndDistanceTable.get(destination).totalWeight;
         if(path.size() == 1 && pathLength > 0){
@@ -83,10 +83,10 @@ public class Dijkstra {
      * @param startTime Staring time of the route in minutes since midnight
      * @return
      */
-    public Route getRouteWithRestrictions(RoadVertex origin, RoadVertex destination, Integer[] allowed, double startTime){
+    public Route getRouteWithRestrictions(RoadVertex origin, RoadVertex destination, Integer allowed, double startTime){
         reset();
         prevVertexAndDistanceTable.put(origin, new PrevVertexAndDistance(origin, 0));
-        recursiveDijkstra(origin, Arrays.asList(allowed), startTime);
+        recursiveDijkstra(origin, allowed, startTime);
         createPathRecursively(destination);
         double pathLength = prevVertexAndDistanceTable.get(destination).totalWeight;
         if(path.size() == 1 && pathLength > 0){
@@ -140,21 +140,14 @@ public class Dijkstra {
      * Updates prevVertAndDistance HashMap with distances from the first vertex passed to each vector in the graph,
      * uses only edges with if edge tags and allowed tags have mutual elements.
      * @param v vertex
-     * @param allowedTags list of tags that this route can use
+     * @param allowedTag list of tags that this route can use
      */
-    private void recursiveDijkstra(RoadVertex v, List<Integer> allowedTags) {
+    private void recursiveDijkstra(RoadVertex v, Integer allowedTag) {
         double currentDistance = prevVertexAndDistanceTable.get(v).totalWeight;
         unvisited.remove(v);
         for (RoadEdge edge : adjacencyMap.get(v)) {
             //Checking tags
-            boolean valid = false;
-            for(Integer tag: edge.getAllowedTags()){
-                if(allowedTags.contains(tag)){
-                    valid = true;
-                    break;
-                }
-            }
-            if(!valid) continue;
+            if(!(edge.getAllowedTag() == allowedTag)) continue;
 
             RoadVertex adjVertex = edge.getDestination();
             double localWeight = edge.getBaseWeight();
@@ -167,7 +160,7 @@ public class Dijkstra {
             return;
         }
         RoadVertex nextVertex = Collections.min(unvisited, new EdgeComparator(prevVertexAndDistanceTable));
-        recursiveDijkstra(nextVertex, allowedTags);
+        recursiveDijkstra(nextVertex, allowedTag);
     }
 
     /**
@@ -176,22 +169,16 @@ public class Dijkstra {
      * spent on route.
      *
      * @param v vertex
-     * @param allowedTags list of tags that this route can use
+     * @param allowedTag list of tags that this route can use
      * @param currentTime time in minutes since midnight at which we start the route
      */
-    private void recursiveDijkstra(RoadVertex v, List<Integer> allowedTags, double currentTime) {
+    private void recursiveDijkstra(RoadVertex v, Integer allowedTag, double currentTime) {
         double currentDistance = prevVertexAndDistanceTable.get(v).totalWeight;
         unvisited.remove(v);
         for (RoadEdge edge : adjacencyMap.get(v)) {
             //Checking tags
-            boolean valid = false;
-            for(Integer tag: edge.getAllowedTags()){
-                if(allowedTags.contains(tag)){
-                    valid = true;
-                    break;
-                }
-            }
-            if(!valid) continue;
+            if(!(edge.getAllowedTag() == allowedTag)) continue;
+
             RoadVertex adjVertex = edge.getDestination();
             double localWeight = edge.getScaledWeight(currentDistance + currentTime); //Considering congestion at the time this edge is reached
             double newSumWeight = localWeight + currentDistance;
@@ -203,7 +190,7 @@ public class Dijkstra {
             return;
         }
         RoadVertex nextVertex = Collections.min(unvisited, new EdgeComparator(prevVertexAndDistanceTable));
-        recursiveDijkstra(nextVertex, allowedTags, currentTime);
+        recursiveDijkstra(nextVertex, allowedTag, currentTime);
     }
 
 

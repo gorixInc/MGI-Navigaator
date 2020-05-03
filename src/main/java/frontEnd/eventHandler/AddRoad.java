@@ -63,9 +63,9 @@ public class AddRoad implements EventHandler<MouseEvent> {
                         double secondX = graphicalVertex.getRoadVertex().posX;
                         double secondY = graphicalVertex.getRoadVertex().posY;
                         if (twoWay) {
-                            graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), new Integer[]{roadTypes.get(roadType)});
+                            graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), roadTypes.get(roadType));
                         } else {
-                            graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), new Integer[]{roadTypes.get(roadType)});
+                            graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), roadTypes.get(roadType));
                         }
                         GraphicalEdge gEdge = new GraphicalEdge(drawEdge(firstX, firstY, secondX, secondY, canvas),firstClick, graphicalVertex.getRoadVertex());
                         edgesGraphics.add(gEdge);

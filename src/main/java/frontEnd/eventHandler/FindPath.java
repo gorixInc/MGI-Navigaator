@@ -69,7 +69,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                 secondVertices = secondClick(point, pointFirst);
                 if (firstVertices.size() == 1) {
                     if (secondVertices.size() == 1) {
-                        Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(0), new Integer[]{roadTypes.get(roadType)});
+                        Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(0), roadTypes.get(roadType));
                         routes.add(route);
                     } else {
                         for (int i = 0; i < secondVertices.size(); i += 2) {
@@ -81,7 +81,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                                 Route route = new Route(routeVertices, distanceBetweenVertices);
                                 routes.add(route);
                             } else {
-                                Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(i + 1), new Integer[]{roadTypes.get(roadType)});
+                                Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(i + 1), roadTypes.get(roadType));
                                 List<RoadVertex> routeVertices = route.getPathVertices();
                                 double routeWeight = route.getTotalWeight();
                                 routeVertices.add(secondVertices.get(i));
@@ -95,7 +95,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                 } else {
                     for (int i = 0; i < firstVertices.size(); i += 2) {
                         if (secondVertices.size() == 1) {
-                            Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(0), new Integer[]{roadTypes.get(roadType)});
+                            Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(0), roadTypes.get(roadType));
                             List<RoadVertex> routeVertices = route.getPathVertices();
                             double routeWeight = route.getTotalWeight();
                             routeVertices.add(0, firstVertices.get(i));
@@ -113,7 +113,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                                     Route route = new Route(routeVertices, distanceBetweenVertices);
                                     routes.add(route);
                                 } else {
-                                    Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(j + 1), new Integer[]{roadTypes.get(roadType)});
+                                    Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(j + 1), roadTypes.get(roadType));
                                     List<RoadVertex> routeVertices = route.getPathVertices();
                                     double routeWeight = route.getTotalWeight();
                                     routeVertices.add(secondVertices.get(j));
@@ -158,13 +158,12 @@ public class FindPath implements EventHandler<MouseEvent> {
                 loop:
                 for (RoadEdge roadEdge : graph.getAdjacencyMap().get(graphicalEdge.getStart())) {
                     if (roadEdge.getDestination().equals(graphicalEdge.getEnd())) {
-                        for (Integer allowedTag : roadEdge.getAllowedTags()) {
-                            if (allowedTag == roadTypes.get(roadType)) {
-                                RoadVertex newVertex = new RoadVertex(-1, point.getX(), point.getY());
-                                firstVertices.add(newVertex);
-                                firstVertices.add(graphicalEdge.getStart());
-                                break loop;
-                            }
+                        Integer allowedTag = roadEdge.getAllowedTag();
+                        if (allowedTag == roadTypes.get(roadType)) {
+                            RoadVertex newVertex = new RoadVertex(-1, point.getX(), point.getY());
+                            firstVertices.add(newVertex);
+                            firstVertices.add(graphicalEdge.getStart());
+                            break loop;
                         }
                     }
                 }
@@ -187,18 +186,17 @@ public class FindPath implements EventHandler<MouseEvent> {
                 loop:
                 for (RoadEdge roadEdge : graph.getAdjacencyMap().get(graphicalEdge.getStart())) {
                     if (roadEdge.getDestination().equals(graphicalEdge.getEnd())) {
-                        for (Integer allowedTag : roadEdge.getAllowedTags()) {
-                            if (allowedTag == roadTypes.get(roadType)) {
-                                RoadVertex newVertex = new RoadVertex(-1, point.getX(), point.getY());
+                        Integer allowedTag = roadEdge.getAllowedTag();
+                        if (allowedTag == roadTypes.get(roadType)) {
+                            RoadVertex newVertex = new RoadVertex(-1, point.getX(), point.getY());
+                            secondVertices.add(newVertex);
+                            secondVertices.add(graphicalEdge.getEnd());
+                            if (graphicalEdge.getEdge().contains(pointFirst)) {
                                 secondVertices.add(newVertex);
-                                secondVertices.add(graphicalEdge.getEnd());
-                                if (graphicalEdge.getEdge().contains(pointFirst)) {
-                                    secondVertices.add(newVertex);
-                                    newVertex = new RoadVertex(-1, pointFirst.getX(), pointFirst.getY());
-                                    secondVertices.add(newVertex);
-                                }
-                                break loop;
+                                newVertex = new RoadVertex(-1, pointFirst.getX(), pointFirst.getY());
+                                secondVertices.add(newVertex);
                             }
+                            break loop;
                         }
                     }
                 }

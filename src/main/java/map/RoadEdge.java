@@ -1,24 +1,24 @@
 package map;
 
 public class RoadEdge{
-    private Integer[] allowedTags;
+    private Integer allowedTag;
     private RoadVertex destination;
     private Double baseWeight;
     private Double scaledWeight;
     private CongestionFunction congestionFunction;
 
-    public RoadEdge(RoadVertex destination, double baseWeight, Integer[] allowedTags) {
+    public RoadEdge(RoadVertex destination, double baseWeight, Integer allowedTag) {
         this.destination = destination;
         this.baseWeight = baseWeight;
-        this.allowedTags = allowedTags;
+        this.allowedTag = allowedTag;
         this.congestionFunction = new NoCongestion();
         this.scaledWeight = baseWeight;
     }
 
-    public RoadEdge(RoadVertex destination, double baseWeight, Integer[] allowedTags, CongestionFunction congestionFunction) {
+    public RoadEdge(RoadVertex destination, double baseWeight, Integer allowedTag, CongestionFunction congestionFunction) {
         this.destination = destination;
         this.baseWeight = baseWeight;
-        this.allowedTags = allowedTags;
+        this.allowedTag = allowedTag;
         this.congestionFunction = congestionFunction;
         this.scaledWeight = baseWeight;
     }
@@ -41,7 +41,7 @@ public class RoadEdge{
         return baseWeight;
     }
 
-    public Integer[] getAllowedTags() {
-        return allowedTags;
+    public Integer getAllowedTag() {
+        return allowedTag;
     }
 }

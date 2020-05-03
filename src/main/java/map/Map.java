@@ -18,7 +18,7 @@ public class Map {
      * @param end end vertex
      * @param allowedTags tags, who can use the road.
      */
-    public void addTwoWayRoad(RoadVertex start, RoadVertex end, Integer[] allowedTags){
+    public void addTwoWayRoad(RoadVertex start, RoadVertex end, Integer allowedTags){
         double distance = Math.sqrt(Math.pow(Math.abs(start.posY - end.posY), 2) +
                 Math.pow(Math.abs(start.posX - end.posX), 2));
         RoadEdge edge1 = new RoadEdge(end, distance, allowedTags);
@@ -33,7 +33,7 @@ public class Map {
      * @param allowedTags tags, who can use the road.
      * @param congestionFunction congestion function
      */
-    public void addTwoWayRoad(RoadVertex start, RoadVertex end, Integer[] allowedTags,
+    public void addTwoWayRoad(RoadVertex start, RoadVertex end, Integer allowedTags,
                               CongestionFunction congestionFunction){
 
         double distance = Math.sqrt(Math.pow(Math.abs(start.posY - end.posY), 2) +
@@ -53,7 +53,7 @@ public class Map {
      * @param congestionFunctionForward congestion function from start to end
      * @param congestionFunctionBackward congestion function from end to start
      */
-    public void addTwoWayRoad(RoadVertex start, RoadVertex end, Integer[] allowedTags,
+    public void addTwoWayRoad(RoadVertex start, RoadVertex end, Integer allowedTags,
                               CongestionFunction congestionFunctionForward, CongestionFunction congestionFunctionBackward){
         double distance = Math.sqrt(Math.pow(Math.abs(start.posY - end.posY), 2) +
                 Math.pow(Math.abs(start.posX - end.posX), 2));
@@ -69,7 +69,7 @@ public class Map {
      * @param end end vertex
      * @param allowedTags tags, who can use the road.
      */
-    public void addOneWayRoad(RoadVertex start, RoadVertex end, Integer[] allowedTags){
+    public void addOneWayRoad(RoadVertex start, RoadVertex end, Integer allowedTags){
         double distance = Math.sqrt(Math.pow(Math.abs(start.posY - end.posY), 2) +
                 Math.pow(Math.abs(start.posX - end.posX), 2));
         RoadEdge edge = new RoadEdge(end, distance, allowedTags);
@@ -77,41 +77,42 @@ public class Map {
     }
 
     /**
-     * Adds a two-way road from start to end vertex, allowedTags allow the filtering of who can use the road.
+     * Adds a two-way road from start to end vertex, allowedTag allow the filtering of who can use the road.
      * @param start start vertex
      * @param end end vertex
-     * @param allowedTags tags, who can use the road.
+     * @param allowedTag tags, who can use the road.
      */
-    public void addOneWayRoad(RoadVertex start, RoadVertex end, Integer[] allowedTags, CongestionFunction congestionFunction){
+    public void addOneWayRoad(RoadVertex start, RoadVertex end, Integer allowedTag, CongestionFunction congestionFunction){
         double distance = Math.sqrt(Math.pow(Math.abs(start.posY - end.posY), 2) +
                 Math.pow(Math.abs(start.posX - end.posX), 2));
-        RoadEdge edge = new RoadEdge(end, distance, allowedTags,congestionFunction);
+        RoadEdge edge = new RoadEdge(end, distance, allowedTag,congestionFunction);
         mapGraph.addEdge(start, edge);
     }
 
     /**
-     * Adds a two-way road from start to end vertex with given weight, allowedTags allow the filtering of who can use the road.
+     * Adds a two-way road from start to end vertex with given weight, allowedTag allow the filtering of who can use the road.
      * @param start start vertex
      * @param end end vertex
      * @param weight weight override
-     * @param allowedTags tags, who can use the road.
+     * @param allowedTag tags, who can use the road.
      */
-    public void addOneWayRoad(RoadVertex start, RoadVertex end, Double weight, Integer[] allowedTags){
-        RoadEdge edge = new RoadEdge(end, weight, allowedTags);
+    public void addOneWayRoad(RoadVertex start, RoadVertex end, Double weight, Integer allowedTag){
+        RoadEdge edge = new RoadEdge(end, weight, allowedTag);
         mapGraph.addEdge(start, edge);
     }
 
     /**
-     * Adds a two-way road from start to end vertex with given weight, allowedTags allow the filtering of who can use the road.
+     * Adds a two-way road from start to end vertex with given weight, allowedTag allow the filtering of who can use the road.
      * Allows to add congestion function to road.
      * @param start start vertex
      * @param end end vertex
      * @param weight weight override
-     * @param allowedTags tags, who can use the road.
+     * @param allowedTag tags, who can use the road.
      * @param congestionFunction congestion function
      */
-    public void addOneWayRoad(RoadVertex start, RoadVertex end, Double weight, Integer[] allowedTags, CongestionFunction congestionFunction){
-        RoadEdge edge = new RoadEdge(end, weight, allowedTags, congestionFunction);
+    public void addOneWayRoad(RoadVertex start, RoadVertex end, Double weight, Integer allowedTag,
+                              CongestionFunction congestionFunction){
+        RoadEdge edge = new RoadEdge(end, weight, allowedTag, congestionFunction);
         mapGraph.addEdge(start, edge);
     }
 

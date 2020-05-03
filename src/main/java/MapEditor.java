@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.control.*;
+import javafx.scene.text.Font;
 import map.*;
 import frontEnd.eventHandler.AddRoad;
 import frontEnd.eventHandler.AddJunction;
@@ -54,13 +55,24 @@ public class MapEditor {
         MenuItem newFile = new MenuItem("New");
         MenuItem saveFile = new MenuItem("Save");
 
-        TextField scaleRlDist = new TextField();
+
 
         Button drag = new Button("Drag");
         Button addVertexButton = new Button("Add vertices");
         Button addEdgesButton = new Button("Add edges");
         Button deleteButton = new Button("Delete");
+
+        //Scale controls and UI
+        VBox scaleDefiner = new VBox();
+        HBox scaleHbox =  new HBox(10);
         Button setScaleButton =  new Button("Define Scale");
+        Label km = new Label("km");
+        km.setFont(new Font(15));
+        Label scaleInfo =  new Label();
+        TextField scaleRlDist = new TextField();
+        scaleRlDist.setMaxWidth(50);
+        scaleHbox.getChildren().addAll(setScaleButton, scaleRlDist, km);
+        scaleDefiner.getChildren().addAll(scaleHbox, scaleInfo);
 
         Slider zoomSlider = new Slider(0.25, 2, 1);
         zoomSlider.setOrientation(Orientation.VERTICAL);
@@ -156,7 +168,7 @@ public class MapEditor {
 
                     AddJunction addJunction = new AddJunction(canvas, graphicalVertices);
                     AddRoad addRoad = new AddRoad(canvas, graphicalVertices, map, edgesGraphics, twoWay.isSelected(), roadChoice.getValue().toString());
-                    SetScale setScale = new SetScale(canvas, map);
+                    SetScale setScale = new SetScale(canvas, map, scaleInfo);
                     Deleter deleter = new Deleter(graphicalVertices, edgesGraphics, map, canvas);
 
                     addVertexButton.setOnAction(mouseEvent -> {
@@ -192,14 +204,14 @@ public class MapEditor {
                     });
 
                     setScaleButton.setOnAction(mouseEvent -> {
-                        canvas.setOnMousePressed(null);
-                        canvas.setOnMouseDragged(null);
                         try{
+                            canvas.setOnMousePressed(null);
+                            canvas.setOnMouseDragged(null);
                             double newRlDist = Double.parseDouble(scaleRlDist.getText());
                             setScale.setRlDistance(newRlDist);
                             canvas.setOnMouseClicked(setScale);
                         }catch (Exception eb){
-                            System.out.println("wrong number");
+                            scaleInfo.setText("Please enter a number!");
                         }
                     });
 
@@ -208,11 +220,9 @@ public class MapEditor {
                     roadChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) -> addRoad.setRoadType(t1));
 
                     controls.getChildren().addAll(drag, addVertexButton, twoWay, addEdgesButton, deleteButton,
-                            setScaleButton, scaleRlDist);
+                            scaleDefiner);
                 }
             });
-
-
 
         stage.setScene(new Scene(window));
 
