@@ -30,7 +30,8 @@ public class AddRoad implements EventHandler<MouseEvent> {
         System.out.println(roadType);
     }
 
-    public AddRoad(Group canvas, ArrayList<GraphicalVertex> graphicalVertices, Map graph, ArrayList<GraphicalEdge> edgesGraphics, boolean twoWay, String roadType) {
+    public AddRoad(Group canvas, ArrayList<GraphicalVertex> graphicalVertices, Map graph, ArrayList<GraphicalEdge>
+            edgesGraphics, boolean twoWay, String roadType) {
         this.canvas = canvas;
         this.graphicalVertices = graphicalVertices;
         this.graph = graph;

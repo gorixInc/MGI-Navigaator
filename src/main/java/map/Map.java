@@ -4,10 +4,12 @@ import graph.Graph;
 public class Map {
     Graph mapGraph;
     public String name;
+    private double scale;
 
     public Map(String name) {
         this.mapGraph = new Graph();
         this.name = name;
+        scale = 1;
     }
 
     /**
@@ -131,6 +133,10 @@ public class Map {
         for(RoadEdge edge: mapGraph.getEdges()){
             edge.updateWeight(timeMins);
         }
+    }
+
+    public void updateScale(double newScale){
+        this.scale = newScale;
     }
 
     @Override

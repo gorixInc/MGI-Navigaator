@@ -66,6 +66,8 @@ public class MapViewer {
         Button findPathButton = new Button("Find");
         Button dragButton = new Button("Drag");
 
+        Button scaleButton = new Button("Set scale");
+
         Pane centerWindow = new Pane();
         Group canvas = new Group();
 
