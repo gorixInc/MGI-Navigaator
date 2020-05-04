@@ -94,7 +94,7 @@ public class Graph {
         for(RoadVertex vertex: adjacencyMap.keySet()){
             sb.append(vertex.index).append(" -->");
             for(RoadEdge edge: adjacencyMap.get(vertex)){
-                sb.append("\t{").append(edge.getDestination().index).append(", ").append(edge.getBaseWeight()).append("}");
+                sb.append("\t{").append(edge.getDestination().index).append(", ").append(edge.getPixLength()).append("}");
             }
             sb.append('\n');
         }

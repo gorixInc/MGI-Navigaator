@@ -13,12 +13,14 @@ public class GraphTest {
         RoadVertex v6 = new RoadVertex(6, 60, 0);
 
 
-        map.addTwoWayRoad(v1, v2, 1);
-        map.addTwoWayRoad(v2, v3, 1);
-        map.addTwoWayRoad(v3, v4, 1);
-        map.addTwoWayRoad(v3, v5, 1);
-        map.addTwoWayRoad(v4, v6, 1, new SinglePeakCongestion(10.21235, 0.4235235123, 40));
-        map.addTwoWayRoad(v5, v6, 1, new SinglePeakCongestion(45.23234,0.4235235, 40));
+        map.addTwoWayRoad(v1, v2, 50, 1);
+        map.addTwoWayRoad(v2, v3, 50, 1);
+        map.addTwoWayRoad(v3, v4,50, 1);
+        map.addTwoWayRoad(v3, v5, 50, 1);
+        map.addTwoWayRoad(v4, v6, 50,1, new SinglePeakCongestion(10.21235,
+                0.4235235123, 40));
+        map.addTwoWayRoad(v5, v6, 50,1, new SinglePeakCongestion(45.23234,
+                0.4235235, 40));
 
         Route r1 = dijkstra.getRouteWithRestrictions(v3, v6, 1, 10);
         Route r2 = dijkstra.getRouteWithRestrictions(v3, v6, 1, 40);
@@ -26,8 +28,8 @@ public class GraphTest {
         System.out.println(r2);
         MapFileHandler.saveMap(map, "test.xml");
 
-
         Map loadedMap = MapFileHandler.openMap("test.xml");
+
         Dijkstra newD = new Dijkstra(loadedMap.getGraph());
 
         Route r21 = newD.getRouteWithRestrictions(v3, v6,1, 10);

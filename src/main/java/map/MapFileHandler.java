@@ -47,6 +47,10 @@ public class MapFileHandler {
 
     private static void parseForGraph(Document document, Map map) throws Exception {
         Element graph = (Element) document.getElementsByTagName("graph").item(0);
+
+        Double scale = Double.parseDouble(graph.getElementsByTagName("scale").item(0).getTextContent());
+        map.updateScale(scale);
+
         NodeList vertices = graph.getElementsByTagName("vertex");
         HashMap<Integer, RoadVertex> tempVertexHashMap = new HashMap<>();
         for(int i = 0; i < vertices.getLength(); i++){
@@ -60,27 +64,32 @@ public class MapFileHandler {
         for(int i = 0; i < vertices.getLength(); i++){
             Element thisVertex = (Element) vertices.item(i);
             int thisVertIndex = Integer.parseInt(thisVertex.getAttribute("index"));
-            NodeList edges = thisVertex.getElementsByTagName("edge");
-            for(int j = 0; j < edges.getLength(); j++){
-                Element thisEdge = (Element) edges.item(j);
-                double thisEdgeWeight = Double.parseDouble(thisEdge.getElementsByTagName("weight")
+            NodeList edgeNodes = thisVertex.getElementsByTagName("edge");
+            for(int j = 0; j < edgeNodes.getLength(); j++){
+                Element thisEdge = (Element) edgeNodes.item(j);
+                double thisEdgeSpeed = Double.parseDouble(thisEdge.getElementsByTagName("speed")
                         .item(0).getTextContent());
-                int destinationIndex = Integer.parseInt(thisEdge.getElementsByTagName("destinationIndex")
+                int destinationIndex = Integer.parseInt(thisEdge.getElementsByTagName("destinationindex")
                         .item(0).getTextContent());
 
                 NodeList allowedTag = thisEdge.getElementsByTagName("tag");
                 Integer tag = Integer.parseInt(allowedTag.item(0).getTextContent());
+
                 Element congFuncNode = (Element) thisEdge.getElementsByTagName("congestionfunction").item(0);
-                int congFuncType = Integer.parseInt(congFuncNode.getElementsByTagName("type").item(0).getTextContent());
+                int congFuncType = Integer.parseInt(congFuncNode.getElementsByTagName("type")
+                        .item(0).getTextContent());
                 CongestionFunction congestionFunction = new NoCongestion();
                 if(congFuncType ==1){
-                    Double peakTime = Double.parseDouble(congFuncNode.getElementsByTagName("peaktime").item(0).getTextContent());
-                    Double minMultiplier = Double.parseDouble(congFuncNode.getElementsByTagName("minmultiplier").item(0).getTextContent());
-                    Double width = Double.parseDouble(congFuncNode.getElementsByTagName("width").item(0).getTextContent());
+                    Double peakTime = Double.parseDouble(congFuncNode.getElementsByTagName("peaktime")
+                            .item(0).getTextContent());
+                    Double minMultiplier = Double.parseDouble(congFuncNode.getElementsByTagName("minmultiplier")
+                            .item(0).getTextContent());
+                    Double width = Double.parseDouble(congFuncNode.getElementsByTagName("width")
+                            .item(0).getTextContent());
                     congestionFunction = new SinglePeakCongestion(peakTime, minMultiplier, width);
                 }
                 map.addOneWayRoad(tempVertexHashMap.get(thisVertIndex), tempVertexHashMap.get(destinationIndex)
-                        , thisEdgeWeight, tag, congestionFunction);
+                        ,thisEdgeSpeed, tag, congestionFunction);
             }
         }
     }
@@ -105,6 +114,10 @@ public class MapFileHandler {
         //Graph
         Element graph = document.createElement("graph");
         root.appendChild(graph);
+
+        Element scale =  document.createElement("scale");
+        scale.appendChild(document.createTextNode(String.valueOf(map.getScale())));
+        graph.appendChild(scale);
 
         HashMap<RoadVertex, LinkedList<RoadEdge>> adjacencyMap = map.getGraph().getAdjacencyMap();
 
@@ -155,9 +168,10 @@ public class MapFileHandler {
 
     private static Node createEdgeNode(Document doc, RoadEdge edge){
         Element edgeEl = doc.createElement("edge");
-        Element destID = doc.createElement("destinationIndex");
-        Element weight = doc.createElement("weight");
-        Element allowedTags = doc.createElement("allowedtags");
+        Element allowedTagEl = doc.createElement("allowedtags");
+        Element destID = doc.createElement("destinationindex");
+        Element speedEl = doc.createElement("speed");
+
         Element congFuncEl = doc.createElement("congestionfunction");
         Element funcType = doc.createElement("type");
 
@@ -165,7 +179,7 @@ public class MapFileHandler {
         Integer tag = edge.getAllowedTag();
         Element tagEl = doc.createElement("tag");
         tagEl.appendChild(doc.createTextNode(tag.toString()));
-        allowedTags.appendChild(tagEl);
+        allowedTagEl.appendChild(tagEl);
 
         congFuncEl.appendChild(funcType);
 
@@ -191,13 +205,12 @@ public class MapFileHandler {
             congFuncEl.appendChild(widthEl);
         }
 
-
         destID.appendChild(doc.createTextNode(edge.getDestination().index.toString()));
-        weight.appendChild(doc.createTextNode(edge.getBaseWeight().toString()));
+        speedEl.appendChild(doc.createTextNode(edge.getAllowedSpeed().toString()));
 
         edgeEl.appendChild(destID);
-        edgeEl.appendChild(weight);
-        edgeEl.appendChild(allowedTags);
+        edgeEl.appendChild(speedEl);
+        edgeEl.appendChild(allowedTagEl);
         edgeEl.appendChild(congFuncEl);
         return edgeEl;
     }

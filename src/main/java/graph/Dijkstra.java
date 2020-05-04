@@ -13,7 +13,6 @@ public class Dijkstra {
     private HashMap<RoadVertex, PrevVertexAndDistance> prevVertexAndDistanceTable;
     private List<RoadVertex> path;
     private List<RoadVertex> unvisited;
-    private List<RoadVertex> allVertices;
 
     public Dijkstra(Graph graph) {
         this.graph = graph;
@@ -22,7 +21,7 @@ public class Dijkstra {
 
 
     private void reset(){
-        allVertices = graph.getVertices();
+        List<RoadVertex> allVertices = graph.getVertices();
         adjacencyMap = graph.getAdjacencyMap();
         path =  new ArrayList<>();
         unvisited = new ArrayList<>();
@@ -124,7 +123,7 @@ public class Dijkstra {
         unvisited.remove(v);
         for (RoadEdge edge : adjacencyMap.get(v)) {
             RoadVertex adjVertex = edge.getDestination();
-            double localWeight = edge.getBaseWeight();
+            double localWeight = edge.getPixLength();
             double newSumWeight = localWeight + currentDistance;
             if (newSumWeight < prevVertexAndDistanceTable.get(adjVertex).totalWeight) {
                 prevVertexAndDistanceTable.put(adjVertex, new PrevVertexAndDistance(v, newSumWeight));
@@ -147,10 +146,10 @@ public class Dijkstra {
         unvisited.remove(v);
         for (RoadEdge edge : adjacencyMap.get(v)) {
             //Checking tags
-            if(!(edge.getAllowedTag() == allowedTag)) continue;
+            if(!(edge.getAllowedTag().equals(allowedTag))) continue;
 
             RoadVertex adjVertex = edge.getDestination();
-            double localWeight = edge.getBaseWeight();
+            double localWeight = edge.getPixLength();
             double newSumWeight = localWeight + currentDistance;
             if (newSumWeight < prevVertexAndDistanceTable.get(adjVertex).totalWeight) {
                 prevVertexAndDistanceTable.put(adjVertex, new PrevVertexAndDistance(v, newSumWeight));
@@ -177,10 +176,10 @@ public class Dijkstra {
         unvisited.remove(v);
         for (RoadEdge edge : adjacencyMap.get(v)) {
             //Checking tags
-            if(!(edge.getAllowedTag() == allowedTag)) continue;
+            if(!(edge.getAllowedTag().equals(allowedTag))) continue;
 
             RoadVertex adjVertex = edge.getDestination();
-            double localWeight = edge.getScaledWeight(currentDistance + currentTime); //Considering congestion at the time this edge is reached
+            double localWeight = edge.getWeightAtTime(currentDistance + currentTime); //Considering congestion at the time this edge is reached
             double newSumWeight = localWeight + currentDistance;
             if (newSumWeight < prevVertexAndDistanceTable.get(adjVertex).totalWeight) {
                 prevVertexAndDistanceTable.put(adjVertex, new PrevVertexAndDistance(v, newSumWeight));

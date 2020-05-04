@@ -31,7 +31,8 @@ public class AddRoad implements EventHandler<MouseEvent> {
         System.out.println(roadType);
     }
 
-    public AddRoad(Group canvas, List<GraphicalVertex> graphicalVertices, Map graph, List<GraphicalEdge> edgesGraphics, boolean twoWay, String roadType) {
+    public AddRoad(Group canvas, List<GraphicalVertex> graphicalVertices, Map graph, List<GraphicalEdge> edgesGraphics,
+                   boolean twoWay, String roadType) {
         this.canvas = canvas;
         this.graphicalVertices = graphicalVertices;
         this.graph = graph;
@@ -57,17 +58,21 @@ public class AddRoad implements EventHandler<MouseEvent> {
                 }
             } else {
                 for (GraphicalVertex graphicalVertex : graphicalVertices) {
-                    if (graphicalVertex.getGraphics().contains(point) && graphicalVertex.getRoadVertex() != firstClick) {
+                    if (graphicalVertex.getGraphics().contains(point) && graphicalVertex.getRoadVertex() != firstClick){
                         double firstX = firstClick.posX;
                         double firstY = firstClick.posY;
                         double secondX = graphicalVertex.getRoadVertex().posX;
                         double secondY = graphicalVertex.getRoadVertex().posY;
+                                ////// ADD SPEED HERE!
                         if (twoWay) {
-                            graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), roadTypes.get(roadType));
+                            graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), 50,
+                                    roadTypes.get(roadType));
                         } else {
-                            graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), roadTypes.get(roadType));
+                            graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), 50,
+                                    roadTypes.get(roadType));
                         }
-                        GraphicalEdge gEdge = new GraphicalEdge(drawEdge(firstX, firstY, secondX, secondY, canvas),firstClick, graphicalVertex.getRoadVertex());
+                        GraphicalEdge gEdge = new GraphicalEdge(drawEdge(firstX, firstY, secondX, secondY, canvas),
+                                firstClick, graphicalVertex.getRoadVertex());
                         edgesGraphics.add(gEdge);
                         first = true;
                         break;
