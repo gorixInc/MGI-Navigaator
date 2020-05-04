@@ -1,5 +1,5 @@
 Transition to using Map class instead of Graph class in Main (+)
-Improve UI, add ability to remove elements (+), setting scale... more things to come (In progress: Indrek)
+Improve UI, add ability to remove elements (+), setting scale (+)... more things to come (In progress: Indrek)
 Implement map saving (+)
 Separate into two apps (in progress?)
 Implement traffic simulation (+)
