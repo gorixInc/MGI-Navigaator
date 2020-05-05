@@ -1,6 +1,6 @@
-import frontEnd.eventHandler.Deleter;
-import frontEnd.eventHandler.SetScale;
+import frontEnd.eventHandler.*;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -9,8 +9,6 @@ import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import map.*;
-import frontEnd.eventHandler.AddRoad;
-import frontEnd.eventHandler.AddJunction;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MapEditor {
@@ -29,6 +28,11 @@ public class MapEditor {
     List<GraphicalVertex> graphicalVertices = new ArrayList<>();
     List<GraphicalEdge> edgesGraphics = new ArrayList<>();
     Map map;
+    private java.util.Map<String, Integer> roadTypes = new HashMap<String, Integer>() {{
+        put("Motorway", 1);
+        put("Pedestrian", 2);
+        put("Railway", 3);
+    }};
 
     public void editWindow() {
         Stage stage = new Stage();
@@ -56,7 +60,6 @@ public class MapEditor {
         MenuItem saveFile = new MenuItem("Save");
 
 
-
         Button drag = new Button("Drag");
         Button addVertexButton = new Button("Add vertices");
         Button addEdgesButton = new Button("Add edges");
@@ -64,24 +67,38 @@ public class MapEditor {
 
         //Scale controls and UI
         VBox scaleDefiner = new VBox();
-        HBox scaleHbox =  new HBox(10);
-        Button setScaleButton =  new Button("Define Scale");
+        HBox scaleHbox = new HBox(10);
+        Button setScaleButton = new Button("Define Scale");
         Label km = new Label("km");
         km.setFont(new Font(15));
-        Label scaleInfo =  new Label();
+        Label scaleInfo = new Label();
         TextField scaleRlDist = new TextField();
         scaleRlDist.setMaxWidth(50);
         scaleHbox.getChildren().addAll(setScaleButton, scaleRlDist, km);
         scaleDefiner.getChildren().addAll(scaleHbox, scaleInfo);
 
+        Label speedLimitInfo1 = new Label("Motorway:");
+        TextField speedLimit1 = new TextField("90");
+        Label speedLimitInfo2 = new Label("Pedestrian:");
+        TextField speedLimit2 = new TextField("5");
+        Label speedLimitInfo3 = new Label("Railway:");
+        TextField speedLimit3 = new TextField("120");
+
+        java.util.Map<Integer, Integer> maxSpeeds = new HashMap<Integer, Integer>() {{
+            put(1, 90);
+            put(2, 5);
+            put(3, 120);
+        }};
+
+
         Slider zoomSlider = new Slider(0.25, 2, 1);
         zoomSlider.setOrientation(Orientation.VERTICAL);
         zoomSlider.setShowTickMarks(true);
-        zoomSlider.setPrefHeight(stage.getHeight()*0.75);
+        zoomSlider.setPrefHeight(stage.getHeight() * 0.75);
 
         Label zoomValue = new Label(zoomSlider.getValue() * 100 + "%");
         zoomSlider.valueProperty().addListener((observableValue, number, t1) -> {
-            zoomValue.setText(String.format("%.0f",zoomSlider.getValue() * 100) + "%");
+            zoomValue.setText(String.format("%.0f", zoomSlider.getValue() * 100) + "%");
             canvas.setScaleX(zoomSlider.getValue());
             canvas.setScaleY(zoomSlider.getValue());
         });
@@ -120,10 +137,10 @@ public class MapEditor {
 
         rightSlider.getChildren().addAll(zoomValue, zoomSlider);
         rightSlider.setSpacing(10);
-        rightSlider.setPadding(new Insets(10,10,10,10));
+        rightSlider.setPadding(new Insets(10, 10, 10, 10));
         rightSlider.setMinWidth(80);
 
-        controls.setPadding(new Insets(10,10,10,10));
+        controls.setPadding(new Insets(10, 10, 10, 10));
         controls.setSpacing(10);
 
         topBar.getChildren().addAll(menuBar, topToolbar);
@@ -132,12 +149,12 @@ public class MapEditor {
 
         fileMenu.getItems().addAll(newFile, saveFile);
 
-        saveFile.setOnAction(e ->{
+        saveFile.setOnAction(e -> {
             canvas.setOnMousePressed(null);
             canvas.setOnMouseDragged(null);
             canvas.setOnMouseClicked(null);
             File file = saveChooser.showSaveDialog(stage);
-            if (file != null){
+            if (file != null) {
                 try {
                     MapFileHandler.saveMap(map, file.toString());
                 } catch (ParserConfigurationException ex) {
@@ -149,80 +166,102 @@ public class MapEditor {
             System.out.println(map);
         });
 
-        newFile.setOnAction(e ->{
-                File file = imageChooser.showOpenDialog(stage);
-                if (file != null){
-                    controls.getChildren().clear();
-                    graphicalVertices.clear();
-                    edgesGraphics.clear();
-                    canvas.getChildren().clear();
-                    map = new Map("nimi");
-                    Image image = new Image(file.toURI().toString());
-                    ImageView imageView = new ImageView(image);
-                    imageView.setPreserveRatio(true);
-                    imageView.setFitHeight(image.getHeight());
-                    imageView.setFitWidth(image.getWidth());
+        newFile.setOnAction(e -> {
+            File file = imageChooser.showOpenDialog(stage);
+            if (file != null) {
+                controls.getChildren().clear();
+                graphicalVertices.clear();
+                edgesGraphics.clear();
+                canvas.getChildren().clear();
+                map = new Map("nimi");
+                Image image = new Image(file.toURI().toString());
+                ImageView imageView = new ImageView(image);
+                imageView.setPreserveRatio(true);
+                imageView.setFitHeight(image.getHeight());
+                imageView.setFitWidth(image.getWidth());
 
-                    canvas.getChildren().add(imageView);
+                canvas.getChildren().add(imageView);
 
 
-                    AddJunction addJunction = new AddJunction(canvas, graphicalVertices);
-                    AddRoad addRoad = new AddRoad(canvas, graphicalVertices, map, edgesGraphics, twoWay.isSelected(), roadChoice.getValue().toString());
-                    SetScale setScale = new SetScale(canvas, map, scaleInfo);
-                    Deleter deleter = new Deleter(graphicalVertices, edgesGraphics, map, canvas);
+                AddJunction addJunction = new AddJunction(canvas, graphicalVertices);
+                AddRoad addRoad = new AddRoad(canvas, graphicalVertices, map, edgesGraphics,
+                        twoWay.isSelected(), roadTypes.get(roadChoice.getValue().toString()),
+                        maxSpeeds.get(roadTypes.get(roadChoice.getValue().toString())));
+                SetScale setScale = new SetScale(canvas, map, scaleInfo);
+                Deleter deleter = new Deleter(graphicalVertices, edgesGraphics, map, canvas);
 
-                    addVertexButton.setOnAction(mouseEvent -> {
-                        canvas.setOnMousePressed(null);
-                        canvas.setOnMouseDragged(null);
-                        canvas.setOnMouseClicked(addJunction);
-                        topToolbar.getChildren().clear();
-                    });
+                addVertexButton.setOnAction(mouseEvent -> {
+                    canvas.setOnMousePressed(null);
+                    canvas.setOnMouseDragged(null);
+                    canvas.setOnMouseClicked(addJunction);
+                    topToolbar.getChildren().clear();
+                });
 
-                    addEdgesButton.setOnAction(mouseEvent -> {
-                        canvas.setOnMousePressed(null);
-                        canvas.setOnMouseDragged(null);
-                        canvas.setOnMouseClicked(addRoad);
-                        topToolbar.getChildren().clear();
-                        topToolbar.getChildren().add(roadChoice);
-                    });
+                addEdgesButton.setOnAction(mouseEvent -> {
+                    canvas.setOnMousePressed(null);
+                    canvas.setOnMouseDragged(null);
+                    canvas.setOnMouseClicked(addRoad);
+                    topToolbar.getChildren().clear();
+                    topToolbar.getChildren().addAll(roadChoice, speedLimitInfo1, speedLimit1, speedLimitInfo2,
+                            speedLimit2, speedLimitInfo3, speedLimit3);
+                });
 
-                    deleteButton.setOnAction(mouseEvent -> {
-                        canvas.setOnMousePressed(null);
-                        canvas.setOnMouseDragged(null);
-                        canvas.setOnMouseClicked(deleter);
-                        topToolbar.getChildren().clear();
-                    });
+                deleteButton.setOnAction(mouseEvent -> {
+                    canvas.setOnMousePressed(null);
+                    canvas.setOnMouseDragged(null);
+                    canvas.setOnMouseClicked(deleter);
+                    topToolbar.getChildren().clear();
+                });
 
-                    drag.setOnAction(mouseEvent ->{
-                        canvas.setOnMouseClicked(null);
-                        canvas.setOnMousePressed(presser ->{
-                            canvas.setOnMouseDragged(dragger ->{
-                                canvas.setTranslateX(dragger.getX() - presser.getX() + canvas.getTranslateX());
-                                canvas.setTranslateY(dragger.getY() - presser.getY() + canvas.getTranslateY());
-                            });
+                drag.setOnAction(mouseEvent -> {
+                    canvas.setOnMouseClicked(null);
+                    canvas.setOnMousePressed(presser -> {
+                        canvas.setOnMouseDragged(dragger -> {
+                            canvas.setTranslateX(dragger.getX() - presser.getX() + canvas.getTranslateX());
+                            canvas.setTranslateY(dragger.getY() - presser.getY() + canvas.getTranslateY());
                         });
                     });
+                });
 
-                    setScaleButton.setOnAction(mouseEvent -> {
-                        try{
-                            canvas.setOnMousePressed(null);
-                            canvas.setOnMouseDragged(null);
-                            double newRlDist = Double.parseDouble(scaleRlDist.getText());
-                            setScale.setRlDistance(newRlDist);
-                            canvas.setOnMouseClicked(setScale);
-                        }catch (Exception eb){
-                            scaleInfo.setText("Please enter a number!");
-                        }
-                    });
+                setScaleButton.setOnAction(mouseEvent -> {
+                    try {
+                        canvas.setOnMousePressed(null);
+                        canvas.setOnMouseDragged(null);
+                        double newRlDist = Double.parseDouble(scaleRlDist.getText());
+                        setScale.setRlDistance(newRlDist);
+                        canvas.setOnMouseClicked(setScale);
+                    } catch (Exception eb) {
+                        scaleInfo.setText("Please enter a number!");
+                    }
+                });
 
-                    twoWay.setOnAction(checboxEvent -> addRoad.updateCheckbox(twoWay.isSelected()));
+                twoWay.setOnAction(checboxEvent -> addRoad.updateCheckbox(twoWay.isSelected()));
 
-                    roadChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) -> addRoad.setRoadType(t1));
+                speedLimitChangeListener speedLimitChange1  = new speedLimitChangeListener(speedLimit1, maxSpeeds,
+                        1, roadTypes.get(roadChoice.getValue().toString()), addRoad);
+                speedLimit1.textProperty().addListener(speedLimitChange1);
+                speedLimitChangeListener speedLimitChange2  = new speedLimitChangeListener(speedLimit2, maxSpeeds,
+                        2, roadTypes.get(roadChoice.getValue().toString()), addRoad);
+                speedLimit2.textProperty().addListener(speedLimitChange2);
+                speedLimitChangeListener speedLimitChange3  = new speedLimitChangeListener(speedLimit3, maxSpeeds,
+                        3, roadTypes.get(roadChoice.getValue().toString()), addRoad);
+                speedLimit3.textProperty().addListener(speedLimitChange3);
 
-                    controls.getChildren().addAll(drag, addVertexButton, twoWay, addEdgesButton, deleteButton,
-                            scaleDefiner);
-                }
-            });
+                roadChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) -> {
+                    addRoad.setRoadType(roadTypes.get(t1));
+                    addRoad.setMaxSpeed(maxSpeeds.get(roadTypes.get(t1)));
+                    speedLimitChange1.setRoadType(roadTypes.get(t1));
+                    speedLimitChange2.setRoadType(roadTypes.get(t1));
+                    speedLimitChange3.setRoadType(roadTypes.get(t1));
+                });
+
+
+
+
+                controls.getChildren().addAll(drag, addVertexButton, twoWay, addEdgesButton, deleteButton,
+                        scaleDefiner);
+            }
+        });
 
         stage.setScene(new Scene(window));
 

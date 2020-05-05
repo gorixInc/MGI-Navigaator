@@ -8,7 +8,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Line;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,26 +18,27 @@ public class AddRoad implements EventHandler<MouseEvent> {
     private Map graph;
     private List<GraphicalEdge> edgesGraphics;
     private boolean twoWay;
-    private String roadType;
-    private HashMap<String, Integer> roadTypes = new HashMap<String, Integer>(){{
-        put("Motorway", 1);
-        put("Pedestrian", 2);
-        put("Railway", 3);
-    }};
+    private Integer roadType;
+    private int maxSpeed;
 
-    public void setRoadType(String roadType) {
+    public void setRoadType(Integer roadType) {
         this.roadType = roadType;
         System.out.println(roadType);
     }
 
+    public void setMaxSpeed(int maxSpeed){
+        this.maxSpeed = maxSpeed;
+    }
+
     public AddRoad(Group canvas, List<GraphicalVertex> graphicalVertices, Map graph, List<GraphicalEdge> edgesGraphics,
-                   boolean twoWay, String roadType) {
+                   boolean twoWay, Integer roadType, int maxSpeed) {
         this.canvas = canvas;
         this.graphicalVertices = graphicalVertices;
         this.graph = graph;
         this.edgesGraphics = edgesGraphics;
         this.twoWay = twoWay;
         this.roadType = roadType;
+        this.maxSpeed = maxSpeed;
     }
 
     boolean first = true;
@@ -63,13 +63,14 @@ public class AddRoad implements EventHandler<MouseEvent> {
                         double firstY = firstClick.posY;
                         double secondX = graphicalVertex.getRoadVertex().posX;
                         double secondY = graphicalVertex.getRoadVertex().posY;
+                        System.out.println(maxSpeed);
                                 ////// ADD SPEED HERE!
                         if (twoWay) {
-                            graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), 50,
-                                    roadTypes.get(roadType));
+                            graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), maxSpeed,
+                                    roadType);
                         } else {
-                            graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), 50,
-                                    roadTypes.get(roadType));
+                            graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), maxSpeed,
+                                    roadType);
                         }
                         GraphicalEdge gEdge = new GraphicalEdge(drawEdge(firstX, firstY, secondX, secondY, canvas),
                                 firstClick, graphicalVertex.getRoadVertex());
