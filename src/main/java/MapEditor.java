@@ -123,7 +123,7 @@ public class MapEditor {
             tagHbox.getChildren().addAll(tagLabel, tagCheckBox,  new Label("speed: "),
                     tagSpeedEntry, new Label("km/h"), new Label("Congestion?"), congCheck,
                     new Label("Congestion\npeak time"), congPeak, new Label("Congestion\nmultiplier"), congMult,
-                    new Label("Congestion\nwidht"), congWidth, errorMessage);
+                    new Label("Congestion\nwidth"), congWidth, errorMessage);
 
             roadTagSettingsV.getChildren().add(tagHbox);
             tagCheckboxes[i] = tagCheckBox;

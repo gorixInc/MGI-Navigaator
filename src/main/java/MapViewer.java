@@ -1,6 +1,5 @@
 
 import frontEnd.eventHandler.FindPath;
-import frontEnd.eventHandler.UiRoadPreset;
 import graph.Dijkstra;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -21,11 +20,8 @@ import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import map.*;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
