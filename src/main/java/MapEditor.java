@@ -1,6 +1,5 @@
 import frontEnd.eventHandler.*;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -28,11 +27,7 @@ public class MapEditor {
     List<GraphicalVertex> graphicalVertices = new ArrayList<>();
     List<GraphicalEdge> edgesGraphics = new ArrayList<>();
     Map map;
-    private java.util.Map<String, Integer> roadTypes = new HashMap<String, Integer>() {{
-        put("Motorway", 1);
-        put("Pedestrian", 2);
-        put("Railway", 3);
-    }};
+    UiRoadPreset currentPreset;
 
     public void editWindow() {
         Stage stage = new Stage();
@@ -77,19 +72,6 @@ public class MapEditor {
         scaleHbox.getChildren().addAll(setScaleButton, scaleRlDist, km);
         scaleDefiner.getChildren().addAll(scaleHbox, scaleInfo);
 
-        Label speedLimitInfo1 = new Label("Motorway:");
-        TextField speedLimit1 = new TextField("90");
-        Label speedLimitInfo2 = new Label("Pedestrian:");
-        TextField speedLimit2 = new TextField("5");
-        Label speedLimitInfo3 = new Label("Railway:");
-        TextField speedLimit3 = new TextField("120");
-
-        java.util.Map<Integer, Integer> maxSpeeds = new HashMap<Integer, Integer>() {{
-            put(1, 90);
-            put(2, 5);
-            put(3, 120);
-        }};
-
 
         Slider zoomSlider = new Slider(0.25, 2, 1);
         zoomSlider.setOrientation(Orientation.VERTICAL);
@@ -103,16 +85,80 @@ public class MapEditor {
             canvas.setScaleY(zoomSlider.getValue());
         });
 
-        ObservableList<String> roadOptions = FXCollections.observableArrayList(
-                "Motorway",
-                "Pedestrian",
-                "Railway"
-        );
-
-        ComboBox roadChoice = new ComboBox(roadOptions);
-        roadChoice.setValue("Motorway");
-
         CheckBox twoWay = new CheckBox("Two way?");
+
+        //CHANGES
+        //Bottom panel layout
+
+        final double padding = 5;
+        final double entryWidth = 40;
+        HBox bottomPanel =  new HBox(padding);
+
+        final Integer numberOfTags = 5;
+        VBox roadTagSettingsV = new VBox(padding); //Main for road tags
+        CheckBox[] tagCheckboxes = new CheckBox[numberOfTags];
+        TextField[] tagSpeedEntries = new TextField[numberOfTags];
+        CheckBox[] tagHasCongestion = new CheckBox[numberOfTags];
+        TextField[] tagCongPeak = new TextField[numberOfTags];
+        TextField[] tagCongMult = new TextField[numberOfTags];
+        TextField[] tagCongWidth = new TextField[numberOfTags];
+        Label[] tagErrorMessages = new Label[numberOfTags];
+
+        for(int i = 0; i < numberOfTags; i ++){
+            CheckBox tagCheckBox = new CheckBox();
+            TextField tagSpeedEntry = new TextField();
+            CheckBox congCheck = new CheckBox();
+            TextField congPeak = new TextField();
+            TextField congMult = new TextField();
+            TextField congWidth = new TextField();
+            Label errorMessage = new Label();
+            tagSpeedEntry.maxWidthProperty().setValue(entryWidth);
+            congPeak.maxWidthProperty().setValue(entryWidth);
+            congMult.maxWidthProperty().setValue(entryWidth);
+            congWidth.maxWidthProperty().setValue(entryWidth);
+
+            HBox tagHbox = new HBox(padding);
+            Label tagLabel = new Label("Tag: " + (i+1));
+            tagLabel.setPadding(new Insets(0,0,0,200));
+            tagHbox.getChildren().addAll(tagLabel, tagCheckBox,  new Label("speed: "),
+                    tagSpeedEntry, new Label("km/h"), new Label("Congestion?"), congCheck,
+                    new Label("Congestion\npeak time"), congPeak, new Label("Congestion\nmultiplier"), congMult,
+                    new Label("Congestion\nwidht"), congWidth, errorMessage);
+
+            roadTagSettingsV.getChildren().add(tagHbox);
+            tagCheckboxes[i] = tagCheckBox;
+            tagSpeedEntries[i] = tagSpeedEntry;
+            tagHasCongestion[i] = congCheck;
+            tagCongPeak[i] = congPeak;
+            tagCongMult[i] = congMult;
+            tagCongWidth[i] = congWidth;
+            tagErrorMessages[i] = errorMessage;
+        }
+
+
+        Button updatePresetButton = new Button("Update preset");
+
+        bottomPanel.setStyle("-fx-background-color: #d4d4d4;");
+
+        // bottom panel function
+        final Integer numberOfPresets = 6;
+        HashMap<String, Integer> presetNameToIndex = new HashMap<>();
+        HashMap<Integer, UiRoadPreset> presetIndexToPreset = new HashMap<>();
+        ObservableList<String> roadPresets = FXCollections.observableArrayList();
+        for(int i = 0; i < numberOfPresets; i++){
+            String presetName = "Road preset " + (i + 1);
+            roadPresets.add(presetName);
+            presetNameToIndex.put(presetName, i);
+            presetIndexToPreset.put(i, new UiRoadPreset(numberOfTags));
+        }
+        ComboBox roadChoice = new ComboBox(roadPresets);
+        roadChoice.setValue("Road preset 1");
+        bottomPanel.getChildren().addAll(roadTagSettingsV, roadChoice, updatePresetButton);
+
+        for(int i = 0; i < 5; i++){
+            presetIndexToPreset.put(i, new UiRoadPreset(numberOfTags));
+        }
+        //End of bottom panel
 
         FileChooser imageChooser = new FileChooser();
         imageChooser.setTitle("Open image file");
@@ -126,7 +172,6 @@ public class MapEditor {
         saveChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("MAP", "*.MAP")
         );
-
 
         window.setCenter(centerWindow);
         window.setTop(topBar);
@@ -167,8 +212,10 @@ public class MapEditor {
         });
 
         newFile.setOnAction(e -> {
+            window.setBottom(bottomPanel);
             File file = imageChooser.showOpenDialog(stage);
             if (file != null) {
+                bottomPanel.setVisible(true);
                 controls.getChildren().clear();
                 graphicalVertices.clear();
                 edgesGraphics.clear();
@@ -185,8 +232,7 @@ public class MapEditor {
 
                 AddJunction addJunction = new AddJunction(canvas, graphicalVertices);
                 AddRoad addRoad = new AddRoad(canvas, graphicalVertices, map, edgesGraphics,
-                        twoWay.isSelected(), roadTypes.get(roadChoice.getValue().toString()),
-                        maxSpeeds.get(roadTypes.get(roadChoice.getValue().toString())));
+                        twoWay.isSelected(), numberOfPresets);
                 SetScale setScale = new SetScale(canvas, map, scaleInfo);
                 Deleter deleter = new Deleter(graphicalVertices, edgesGraphics, map, canvas);
 
@@ -198,12 +244,13 @@ public class MapEditor {
                 });
 
                 addEdgesButton.setOnAction(mouseEvent -> {
+                    int roadPresetIndex = presetNameToIndex.get(roadChoice.getValue());
+                    UiRoadPreset currentRoadPreset = presetIndexToPreset.get(roadPresetIndex);
+                    addRoad.setCurrentPreset(currentRoadPreset);
                     canvas.setOnMousePressed(null);
                     canvas.setOnMouseDragged(null);
                     canvas.setOnMouseClicked(addRoad);
                     topToolbar.getChildren().clear();
-                    topToolbar.getChildren().addAll(roadChoice, speedLimitInfo1, speedLimit1, speedLimitInfo2,
-                            speedLimit2, speedLimitInfo3, speedLimit3);
                 });
 
                 deleteButton.setOnAction(mouseEvent -> {
@@ -237,35 +284,89 @@ public class MapEditor {
 
                 twoWay.setOnAction(checboxEvent -> addRoad.updateCheckbox(twoWay.isSelected()));
 
-                speedLimitChangeListener speedLimitChange1  = new speedLimitChangeListener(speedLimit1, maxSpeeds,
-                        1, roadTypes.get(roadChoice.getValue().toString()), addRoad);
-                speedLimit1.textProperty().addListener(speedLimitChange1);
-                speedLimitChangeListener speedLimitChange2  = new speedLimitChangeListener(speedLimit2, maxSpeeds,
-                        2, roadTypes.get(roadChoice.getValue().toString()), addRoad);
-                speedLimit2.textProperty().addListener(speedLimitChange2);
-                speedLimitChangeListener speedLimitChange3  = new speedLimitChangeListener(speedLimit3, maxSpeeds,
-                        3, roadTypes.get(roadChoice.getValue().toString()), addRoad);
-                speedLimit3.textProperty().addListener(speedLimitChange3);
-
                 roadChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) -> {
-                    addRoad.setRoadType(roadTypes.get(t1));
-                    addRoad.setMaxSpeed(maxSpeeds.get(roadTypes.get(t1)));
-                    speedLimitChange1.setRoadType(roadTypes.get(t1));
-                    speedLimitChange2.setRoadType(roadTypes.get(t1));
-                    speedLimitChange3.setRoadType(roadTypes.get(t1));
+                    int roadPresetIndex = presetNameToIndex.get(t1);
+                    currentPreset = presetIndexToPreset.get(roadPresetIndex);
+                    addRoad.setCurrentPreset(currentPreset);
+
+                    //updating bottom panel
+                    for(Label error : tagErrorMessages){
+                        error.setText("");
+                    }
+
+                    for(int i = 0; i < numberOfTags; i++){
+                        if(currentPreset.getTags().contains(i)){
+                            tagCheckboxes[i].setSelected(true);
+                            tagSpeedEntries[i].setText(String.valueOf(currentPreset.getMaxSpeed()[i]));
+                            if(currentPreset.hasCongestion()[i]){
+                                tagHasCongestion[i].setSelected(true);
+                                tagCongMult[i].setText(String.valueOf(currentPreset.getCongestionFunction()[i].getMinMultiplier()));
+                                tagCongPeak[i].setText(String.valueOf(currentPreset.getCongestionFunction()[i].getPeak()));
+                                tagCongWidth[i].setText(String.valueOf(currentPreset.getCongestionFunction()[i].getWidth()));
+                            }else {
+                                tagCongMult[i].setText("");
+                                tagCongPeak[i].setText("");
+                                tagCongWidth[i].setText("");
+                            }
+                        }else{
+                            tagCheckboxes[i].setSelected(false);
+                            tagCongMult[i].setText("");
+                            tagCongPeak[i].setText("");
+                            tagCongWidth[i].setText("");
+                            tagHasCongestion[i].setSelected(false);
+                            tagSpeedEntries[i].setText("");
+                        }
+                    }
                 });
-
-
-
-
                 controls.getChildren().addAll(drag, addVertexButton, twoWay, addEdgesButton, deleteButton,
                         scaleDefiner);
             }
+        });
+
+        updatePresetButton.setOnAction(actionEvent-> {
+            int currentPresetIndex = presetNameToIndex.get(roadChoice.getValue());
+            UiRoadPreset updatedPreset = new UiRoadPreset(numberOfTags);
+            List<Integer> newAllowedTags = new ArrayList<>();
+            for(Label error : tagErrorMessages){
+                error.setText("");
+            }
+            for(int i = 0; i < numberOfTags; i++){
+
+                if(tagCheckboxes[i].isSelected()){
+                    newAllowedTags.add(i);
+                    try{
+                        updatedPreset.getMaxSpeed()[i] = Double.parseDouble(tagSpeedEntries[i].getText());
+                    }catch (Exception e){
+                        tagErrorMessages[i].setText("Error in speed field!");
+                        return;
+                    }
+                    CongestionFunction newCongFunc;
+                    if(tagHasCongestion[i].isSelected()){
+                        updatedPreset.hasCongestion()[i] = true;
+                        try {
+                            newCongFunc = new SinglePeakCongestion(Double.parseDouble(tagCongPeak[i].getText()),
+                                    Double.parseDouble(tagCongMult[i].getText()), Double.parseDouble(tagCongWidth[i].getText()));
+                        } catch (Exception e) {
+                            tagErrorMessages[i].setText("Congestion function error!");
+                            return;
+                        }
+                        updatedPreset.getCongestionFunction()[i] = newCongFunc;
+                    }else {
+                        updatedPreset.hasCongestion()[i] = false;
+                        updatedPreset.setCongestionFunction(new NoCongestion(), i);
+                    }
+                }
+                tagErrorMessages[i].setText("Updated successfully!");
+            }
+            updatedPreset.setTags(newAllowedTags);
+            currentPreset = updatedPreset;
+            presetIndexToPreset.put(currentPresetIndex, updatedPreset);
         });
 
         stage.setScene(new Scene(window));
 
         stage.show();
     }
+
 }
 

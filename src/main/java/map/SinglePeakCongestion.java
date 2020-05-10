@@ -16,7 +16,7 @@ public class SinglePeakCongestion extends CongestionFunction {
         this.width = width;
     }
 
-    public double getMultiplier(double timeMins){
+    public double getMultiplierAtTime(double timeMins){
         double multiplier = (width*10*(1/minMultiplier-1))/(Math.pow((timeMins-peakTime), 2) + width * 10) + 1; //https://www.desmos.com/calculator/jibvt5akbp
         if(multiplier < 1.1){
             multiplier = 1;
@@ -24,14 +24,12 @@ public class SinglePeakCongestion extends CongestionFunction {
         return multiplier;
     }
 
-    public Double getPeakTime() {
+    public Double getPeak() {
         return peakTime;
     }
-
     public Double getMinMultiplier() {
         return minMultiplier;
     }
-
     public Double getWidth() {
         return width;
     }

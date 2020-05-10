@@ -194,7 +194,7 @@ public class MapFileHandler {
             Element widthEl = doc.createElement("width");
 
             peakTimeEl.appendChild(doc.createTextNode(((SinglePeakCongestion) edge.getCongestionFunction())
-                    .getPeakTime().toString()));
+                    .getPeak().toString()));
             minMultiplierEl.appendChild(doc.createTextNode(((SinglePeakCongestion) edge.getCongestionFunction())
                     .getMinMultiplier().toString()));
             widthEl.appendChild(doc.createTextNode(((SinglePeakCongestion) edge.getCongestionFunction())

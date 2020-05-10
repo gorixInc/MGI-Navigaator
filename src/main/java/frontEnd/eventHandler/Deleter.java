@@ -60,5 +60,6 @@ public class Deleter implements EventHandler<MouseEvent> {
                 }
             }
         }
+        System.out.println(graph.toString());
     }
 }

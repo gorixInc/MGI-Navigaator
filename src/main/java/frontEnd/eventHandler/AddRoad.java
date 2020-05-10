@@ -8,7 +8,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Line;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class AddRoad implements EventHandler<MouseEvent> {
@@ -18,27 +17,25 @@ public class AddRoad implements EventHandler<MouseEvent> {
     private Map graph;
     private List<GraphicalEdge> edgesGraphics;
     private boolean twoWay;
-    private Integer roadType;
     private int maxSpeed;
-
-    public void setRoadType(Integer roadType) {
-        this.roadType = roadType;
-        System.out.println(roadType);
-    }
+    UiRoadPreset currentPreset;
 
     public void setMaxSpeed(int maxSpeed){
         this.maxSpeed = maxSpeed;
     }
 
     public AddRoad(Group canvas, List<GraphicalVertex> graphicalVertices, Map graph, List<GraphicalEdge> edgesGraphics,
-                   boolean twoWay, Integer roadType, int maxSpeed) {
+                   boolean twoWay, int numberOfPresets) {
         this.canvas = canvas;
         this.graphicalVertices = graphicalVertices;
         this.graph = graph;
         this.edgesGraphics = edgesGraphics;
         this.twoWay = twoWay;
-        this.roadType = roadType;
-        this.maxSpeed = maxSpeed;
+        this.currentPreset = new UiRoadPreset(numberOfPresets);
+    }
+
+    public void setCurrentPreset(UiRoadPreset newPreset){
+        this.currentPreset = newPreset;
     }
 
     boolean first = true;
@@ -64,14 +61,20 @@ public class AddRoad implements EventHandler<MouseEvent> {
                         double secondX = graphicalVertex.getRoadVertex().posX;
                         double secondY = graphicalVertex.getRoadVertex().posY;
                         System.out.println(maxSpeed);
-                                ////// ADD SPEED HERE!
                         if (twoWay) {
-                            graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), maxSpeed,
-                                    roadType);
+                            System.out.println(currentPreset.getTags());
+                            for(Integer tag: currentPreset.getTags()){
+                                graph.addTwoWayRoad(firstClick, graphicalVertex.getRoadVertex(), currentPreset.maxSpeed[tag],
+                                        tag, currentPreset.congestionFunction[tag]);
+                            }
                         } else {
-                            graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), maxSpeed,
-                                    roadType);
+                            for(Integer tag: currentPreset.getTags()){
+                                System.out.println(tag +" " +  currentPreset.maxSpeed[tag]);
+                                graph.addOneWayRoad(firstClick, graphicalVertex.getRoadVertex(), currentPreset.maxSpeed[tag],
+                                        tag, currentPreset.congestionFunction[tag]);
+                            }
                         }
+                        System.out.println(graph.toString());
                         GraphicalEdge gEdge = new GraphicalEdge(drawEdge(firstX, firstY, secondX, secondY, canvas),
                                 firstClick, graphicalVertex.getRoadVertex());
                         edgesGraphics.add(gEdge);
@@ -89,7 +92,7 @@ public class AddRoad implements EventHandler<MouseEvent> {
 
     private Line drawEdge(double x1, double y1, double x2, double y2, Group group) {
         Line edge = new Line(x1, y1, x2, y2);
-        edge.setStrokeWidth(2);
+        edge.setStrokeWidth(5);
         group.getChildren().add(edge);
         return edge;
     }

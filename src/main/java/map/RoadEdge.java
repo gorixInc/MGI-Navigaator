@@ -43,10 +43,10 @@ public class RoadEdge{
     }
 
     public void updateCongTime(double minsSinceMidnight){
-        this.timeWithCong = congestionFunction.getMultiplier(minsSinceMidnight) * timeNoCong;
+        this.timeWithCong = congestionFunction.getMultiplierAtTime(minsSinceMidnight) * timeNoCong;
     }
     public double getWeightAtTime(double minsSinceMidnight){
-        return congestionFunction.getMultiplier(minsSinceMidnight) * timeNoCong;
+        return congestionFunction.getMultiplierAtTime(minsSinceMidnight) * timeNoCong;
     }
     public CongestionFunction getCongestionFunction() {
         return congestionFunction;
@@ -59,6 +59,10 @@ public class RoadEdge{
     public Double getTimeWithCong() {
         return timeWithCong;
     }
+
+    public Double getTimeNoCong(){return timeNoCong;}
+
+    public Double getRealLength(){return realLength;}
 
     public Double getPixLength() {
         return pixLength;

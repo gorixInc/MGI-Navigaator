@@ -51,7 +51,7 @@ public class AddJunction implements EventHandler<MouseEvent> {
             }
         }
         if (!vertexExists) {
-            return new Circle(x, y, 5);
+            return new Circle(x, y, 7);
         }
         return null;
     }

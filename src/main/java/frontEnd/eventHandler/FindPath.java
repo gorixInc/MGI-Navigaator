@@ -27,25 +27,19 @@ public class FindPath implements EventHandler<MouseEvent> {
     private List<Circle> routeVertices = new ArrayList<>();
     private List<Line> routeEdges = new ArrayList<>();
 
-    private String roadType;
+    private Integer travellerTag;
 
-    private HashMap<String, Integer> roadTypes = new HashMap<String, Integer>() {{
-        put("Motorway", 1);
-        put("Pedestrian", 2);
-        put("Railway", 3);
-    }};
-
-    public void setRoadType(String roadType) {
-        this.roadType = roadType;
-        System.out.println(roadType);
+    public void setRoadType(Integer travellerTag) {
+        this.travellerTag = travellerTag;
     }
 
-    public FindPath(Group canvas, List<GraphicalVertex> graphicalVertices, List<GraphicalEdge> graphicalEdges, Dijkstra dijkstra, String roadType, Graph graph) {
+    public FindPath(Group canvas, List<GraphicalVertex> graphicalVertices, List<GraphicalEdge> graphicalEdges,
+                    Dijkstra dijkstra, Integer travellerTag, Graph graph) {
         this.canvas = canvas;
         this.graphicalVertices = graphicalVertices;
         this.graphicalEdges = graphicalEdges;
         this.dijkstra = dijkstra;
-        this.roadType = roadType;
+        this.travellerTag = travellerTag;
         this.graph = graph;
     }
 
@@ -68,7 +62,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                 List<RoadVertex> secondVertices = secondClick(point, pointFirst);
                 if (firstVertices.size() == 1) {
                     if (secondVertices.size() == 1) {
-                        Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(0), roadTypes.get(roadType));
+                        Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(0),travellerTag);
                         routes.add(route);
                     } else {
                         for (int i = 0; i < secondVertices.size(); i += 2) {
@@ -80,7 +74,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                                 Route route = new Route(routeVertices, distanceBetweenVertices);
                                 routes.add(route);
                             } else {
-                                Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(i + 1), roadTypes.get(roadType));
+                                Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(i + 1), travellerTag);
                                 List<RoadVertex> routeVertices = route.getPathVertices();
                                 double routeWeight = route.getTotalWeight();
                                 routeVertices.add(secondVertices.get(i));
@@ -94,7 +88,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                 } else {
                     for (int i = 0; i < firstVertices.size(); i += 2) {
                         if (secondVertices.size() == 1) {
-                            Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(0), roadTypes.get(roadType));
+                            Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(0), travellerTag);
                             List<RoadVertex> routeVertices = route.getPathVertices();
                             double routeWeight = route.getTotalWeight();
                             routeVertices.add(0, firstVertices.get(i));
@@ -112,7 +106,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                                     Route route = new Route(routeVertices, distanceBetweenVertices);
                                     routes.add(route);
                                 } else {
-                                    Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(j + 1), roadTypes.get(roadType));
+                                    Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(j + 1), travellerTag);
                                     List<RoadVertex> routeVertices = route.getPathVertices();
                                     double routeWeight = route.getTotalWeight();
                                     routeVertices.add(secondVertices.get(j));
@@ -158,7 +152,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                 for (RoadEdge roadEdge : graph.getAdjacencyMap().get(graphicalEdge.getStart())) {
                     if (roadEdge.getDestination().equals(graphicalEdge.getEnd())) {
                         Integer allowedTag = roadEdge.getAllowedTag();
-                        if (allowedTag.equals(roadTypes.get(roadType))) {
+                        if (allowedTag.equals(travellerTag)) {
                             RoadVertex newVertex = new RoadVertex(-1, point.getX(), point.getY());
                             firstVertices.add(newVertex);
                             firstVertices.add(graphicalEdge.getStart());
@@ -186,7 +180,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                 for (RoadEdge roadEdge : graph.getAdjacencyMap().get(graphicalEdge.getStart())) {
                     if (roadEdge.getDestination().equals(graphicalEdge.getEnd())) {
                         Integer allowedTag = roadEdge.getAllowedTag();
-                        if (allowedTag.equals(roadTypes.get(roadType))) {
+                        if (allowedTag.equals(travellerTag)) {
                             RoadVertex newVertex = new RoadVertex(-1, point.getX(), point.getY());
                             secondVertices.add(newVertex);
                             secondVertices.add(graphicalEdge.getEnd());
@@ -209,16 +203,17 @@ public class FindPath implements EventHandler<MouseEvent> {
         if (route.getPathVertices() == null) return;
         List<RoadVertex> pathVertices = route.getPathVertices();
 
-        Circle vertex = new Circle(pathVertices.get(0).posX, pathVertices.get(0).posY, 2.5);
+        Circle vertex = new Circle(pathVertices.get(0).posX, pathVertices.get(0).posY, 10);
         vertex.setFill(Color.RED);
         this.routeVertices.add(vertex);
-        vertex = new Circle(pathVertices.get(pathVertices.size() - 1).posX, pathVertices.get(pathVertices.size() - 1).posY, 2.5);
+        vertex = new Circle(pathVertices.get(pathVertices.size() - 1).posX, pathVertices.get(pathVertices.size() - 1).posY, 10);
         vertex.setFill(Color.RED);
         this.routeVertices.add(vertex);
 
         for (int i = 0; i < pathVertices.size() - 1; i++) {
             Line edge = new Line(pathVertices.get(i).posX, pathVertices.get(i).posY, pathVertices.get(i + 1).posX, pathVertices.get(i + 1).posY);
             edge.setStroke(Color.RED);
+            edge.setStrokeWidth(8);
             routeEdges.add(edge);
         }
         this.routeVertices.forEach(e -> pane.getChildren().add(e));

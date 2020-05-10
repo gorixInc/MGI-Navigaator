@@ -1,5 +1,6 @@
 
 import frontEnd.eventHandler.FindPath;
+import frontEnd.eventHandler.UiRoadPreset;
 import graph.Dijkstra;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -26,6 +27,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MapViewer {
@@ -56,18 +58,19 @@ public class MapViewer {
 
         HBox topToolbar = new HBox();
 
-        ObservableList<String> roadOptions = FXCollections.observableArrayList(
-                "Motorway",
-                "Pedestrian",
-                "Railway"
-        );
-        ComboBox roadChoice = new ComboBox(roadOptions);
-        roadChoice.setValue("Motorway");
+        ObservableList<String> tags = FXCollections.observableArrayList();
+        HashMap<String, Integer> tagChoiceNameToIndex= new HashMap<>();
+        for(int i = 0; i < 6; i++){
+            String presetName = "Tag " + (i + 1);
+            tags.add(presetName);
+            tagChoiceNameToIndex.put(presetName, i);
+        }
+        ComboBox tagChoice = new ComboBox(tags);
+        tagChoice.setValue("Tag 1");
 
         Button findPathButton = new Button("Find");
         Button dragButton = new Button("Drag");
 
-        Button scaleButton = new Button("Set scale");
 
         Pane centerWindow = new Pane();
         Group canvas = new Group();
@@ -126,7 +129,8 @@ public class MapViewer {
                     clearMap(canvas);
                     Dijkstra dijkstra = new Dijkstra(map.getGraph());
                     readMap(map, canvas);
-                    FindPath findPath = new FindPath(canvas, graphicalVertices, edgesGraphics, dijkstra, roadChoice.getValue().toString(), map.getGraph());
+                    FindPath findPath = new FindPath(canvas, graphicalVertices, edgesGraphics, dijkstra,
+                            tagChoiceNameToIndex.get(tagChoice.getValue()), map.getGraph());
                     findPathButton.setOnAction(e1 -> {
                         canvas.setOnMousePressed(null);
                         canvas.setOnMouseDragged(null);
@@ -142,18 +146,13 @@ public class MapViewer {
                         });
                     });
                     controls.getChildren().addAll(dragButton, findPathButton);
-                    roadChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) -> findPath.setRoadType(t1));
-                    topToolbar.getChildren().add(roadChoice);
+                    tagChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) ->
+                            findPath.setRoadType(tagChoiceNameToIndex.get(t1)));
+                    topToolbar.getChildren().add(tagChoice);
                     rightSlider.getChildren().addAll(zoomValue, zoomSlider);
                     rightSlider.setSpacing(10);
                     rightSlider.setPadding(new Insets(10,10,10,10));
                     rightSlider.setMinWidth(80);
-                } catch (ParserConfigurationException ex) {
-                    ex.printStackTrace();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                } catch (SAXException ex) {
-                    ex.printStackTrace();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -179,7 +178,7 @@ public class MapViewer {
     private void readMap(Map map, Group canvas) {
         for (RoadVertex vertex : map.getGraph().getVertices()) {
             RoadVertex rVertex = vertex;
-            Circle circle = new Circle(rVertex.posX, rVertex.posY, 5);
+            Circle circle = new Circle(rVertex.posX, rVertex.posY, 9);
             GraphicalVertex gVertex = new GraphicalVertex(rVertex, circle);
             graphicalVertices.add(gVertex);
         }
@@ -188,7 +187,7 @@ public class MapViewer {
                 RoadVertex rVertexStart = vertex;
                 RoadVertex rVertexEnd = edge.getDestination();
                 Line line = new Line(rVertexStart.posX, rVertexStart.posY, rVertexEnd.posX, rVertexEnd.posY);
-                line.setStrokeWidth(2.5);
+                line.setStrokeWidth(7);
                 GraphicalEdge graphicalEdge = new GraphicalEdge(line, rVertexStart, rVertexEnd);
                 edgesGraphics.add(graphicalEdge);
             }

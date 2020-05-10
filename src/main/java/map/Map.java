@@ -1,6 +1,7 @@
 package map;
 
 import graph.Graph;
+
 public class Map {
     Graph mapGraph;
     public String name;
@@ -40,7 +41,7 @@ public class Map {
                 Math.pow(Math.abs(start.posX - end.posX), 2));
 
         RoadEdge edge1 = new RoadEdge(end, distance, scale, maxSpeed, allowedTags, congestionFunction);
-        RoadEdge edge2 = new RoadEdge(start, distance, scale, maxSpeed,  allowedTags, congestionFunction);
+        RoadEdge edge2 = new RoadEdge(start, distance, scale, maxSpeed, allowedTags, congestionFunction);
         mapGraph.addNonDirectedEdge(edge1, edge2);
     }
 
@@ -57,10 +58,9 @@ public class Map {
                               CongestionFunction congestionFunctionForward, CongestionFunction congestionFunctionBackward){
         double distance = Math.sqrt(Math.pow(Math.abs(start.posY - end.posY), 2) +
                 Math.pow(Math.abs(start.posX - end.posX), 2));
-
-        RoadEdge edge1 = new RoadEdge(end, distance, scale, maxSpeed, allowedTags, congestionFunctionForward);
-        RoadEdge edge2 = new RoadEdge(start, distance, scale, maxSpeed, allowedTags, congestionFunctionBackward);
-        mapGraph.addNonDirectedEdge(edge1, edge2);
+            RoadEdge edge1 = new RoadEdge(end, distance, scale, maxSpeed, allowedTags, congestionFunctionForward);
+            RoadEdge edge2 = new RoadEdge(start, distance, scale, maxSpeed, allowedTags, congestionFunctionBackward);
+            mapGraph.addNonDirectedEdge(edge1, edge2);
     }
 
     public void addOneWayRoad(RoadVertex start, RoadVertex end, double maxSpeed, Integer allowedTag){
@@ -71,13 +71,14 @@ public class Map {
 
     }
 
-    public void addOneWayRoad(RoadVertex start, RoadVertex end, double maxSpeed, Integer allowedTag, CongestionFunction
+    public void addOneWayRoad(RoadVertex start, RoadVertex end, double maxSpeed, Integer allowedTags, CongestionFunction
                               congestionFunction){
         double distance = Math.sqrt(Math.pow(Math.abs(start.posY - end.posY), 2) +
                 Math.pow(Math.abs(start.posX - end.posX), 2));
-        RoadEdge roadEdge = new RoadEdge(end, distance, scale, maxSpeed, allowedTag, congestionFunction);
-        mapGraph.addEdge(start, roadEdge);
+            RoadEdge edge1 = new RoadEdge(end, distance, scale, maxSpeed, allowedTags, congestionFunction);
+            mapGraph.addEdge(start, edge1);
     }
+
 
     /**
      * removes all edges between given vertices
@@ -93,13 +94,13 @@ public class Map {
      * @param timeMins time of day in minutes since midnight
      */
     public void updateCongestion(double timeMins){
-        for(RoadEdge edge: mapGraph.getEdges()){
+        for(RoadEdge edge: mapGraph.getAllEdges()){
             edge.updateCongTime(timeMins);
         }
     }
 
     public void updateScale(double newScale){
-        for(RoadEdge edge: mapGraph.getEdges()){
+        for(RoadEdge edge: mapGraph.getAllEdges()){
             edge.updateScale(newScale);
         }
         this.scale = newScale;

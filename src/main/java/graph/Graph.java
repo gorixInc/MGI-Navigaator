@@ -11,9 +11,9 @@ import java.util.List;
 public class Graph {
     private HashMap<RoadVertex, LinkedList<RoadEdge>> adjacencyMap;
     private List<RoadVertex> vertices;
-    private List<RoadEdge> edges;
+    private List<RoadEdge> allEdges;
     public Graph(){
-        edges = new ArrayList<>();
+        allEdges = new ArrayList<>();
         this.adjacencyMap = new HashMap<>();
         this.vertices = new ArrayList<>();
     }
@@ -25,8 +25,8 @@ public class Graph {
         return vertices;
     }
 
-    public List<RoadEdge> getEdges() {
-        return edges;
+    public List<RoadEdge> getAllEdges() {
+        return allEdges;
     }
 
     /**
@@ -36,7 +36,7 @@ public class Graph {
      */
     public void addEdge(RoadVertex origin, RoadEdge edge){
         RoadVertex destination = edge.getDestination();
-        edges.add(edge);
+        allEdges.add(edge);
         if(!adjacencyMap.containsKey(origin)){
             LinkedList<RoadEdge> connectedVertices = new LinkedList<>();
             connectedVertices.add(edge);
@@ -70,13 +70,14 @@ public class Graph {
      */
     public void removeEdge(RoadVertex origin, RoadVertex destination){
         LinkedList<RoadEdge> edgesList = adjacencyMap.get(origin);
+        List<RoadEdge> toRemove = new ArrayList<>();
         for(RoadEdge edge : edgesList){
-            if(edge.getDestination() == destination){
-                edges.remove(edge);
-                edgesList.remove();
-                return;
+            if(edge.getDestination().equals(destination)){
+                toRemove.add(edge);
             }
         }
+        allEdges.removeAll(toRemove);
+        edgesList.removeAll(toRemove);
     }
 
     /**
@@ -94,7 +95,7 @@ public class Graph {
         for(RoadVertex vertex: adjacencyMap.keySet()){
             sb.append(vertex.index).append(" -->");
             for(RoadEdge edge: adjacencyMap.get(vertex)){
-                sb.append("\t{").append(edge.getDestination().index).append(", ").append(edge.getPixLength()).append("}");
+                sb.append("\t{").append(edge.getDestination().index).append(", ").append(edge.getTimeNoCong()).append("}");
             }
             sb.append('\n');
         }
