@@ -20,7 +20,8 @@ Kaardi loomine:
    function needs to be defined with 3 parameters: peak time - the time in mintues since 00:00 when the congestion reaches 
    its peak(-1 < peak time < 1439); congestion multiplier - the value that the speed is multiplied at the peak 
    (0 <= congestion multiplier < 1); width - an arbitrary value that defines how long congestion lasts (0 < width < infinity),
-   50 - 100 is a good value. https://www.desmos.com/calculator/jibvt5akbp
+   50 - 100 is a good value. https://www.desmos.com/calculator/jibvt5akbp (travel time is multiplied by the output of this
+   function)
     
    When the preset is complete, "Update preset" button must be pressed.
    
