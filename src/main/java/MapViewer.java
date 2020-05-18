@@ -9,14 +9,22 @@ import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import map.*;
@@ -30,6 +38,7 @@ public class MapViewer {
     List<GraphicalVertex> graphicalVertices = new ArrayList<>();
     List<GraphicalEdge> edgesGraphics = new ArrayList<>();
     Map map;
+    Integer currentTag = 0;
 
     public void viewWindow(){
         Stage stage = new Stage();
@@ -67,14 +76,19 @@ public class MapViewer {
         Button findPathButton = new Button("Find");
         Button dragButton = new Button("Drag");
 
-
         Pane centerWindow = new Pane();
         Group canvas = new Group();
 
-        VBox controls = new VBox();
+        VBox controls = new VBox(10);
+        controls.setPadding(new Insets(10,5,0,10));
         controls.setStyle("-fx-background-color: #d4d4d4;");
 
-        VBox rightSlider = new VBox();
+        Slider timeSlider = new Slider(0, 1439, 1);
+        timeSlider.setOrientation(Orientation.HORIZONTAL);
+
+        Label travelTimeLabel = new Label("Travel time: ");
+
+        VBox rightSlider = new VBox(10);
         rightSlider.setStyle("-fx-background-color: #d4d4d4;");
 
         Slider zoomSlider = new Slider(0.25, 2, 1);
@@ -88,6 +102,8 @@ public class MapViewer {
             canvas.setScaleX(zoomSlider.getValue());
             canvas.setScaleY(zoomSlider.getValue());
         });
+
+
 
         window.setCenter(centerWindow);
         window.setTop(topBar);
@@ -126,12 +142,21 @@ public class MapViewer {
                     Dijkstra dijkstra = new Dijkstra(map.getGraph());
                     readMap(map, canvas);
                     FindPath findPath = new FindPath(canvas, graphicalVertices, edgesGraphics, dijkstra,
-                            tagChoiceNameToIndex.get(tagChoice.getValue()), map.getGraph());
+                            tagChoiceNameToIndex.get(tagChoice.getValue()), map.getGraph(), timeSlider.getValue(),travelTimeLabel);
                     findPathButton.setOnAction(e1 -> {
                         canvas.setOnMousePressed(null);
                         canvas.setOnMouseDragged(null);
                         canvas.setOnMouseClicked(findPath);
                     });
+
+                    Label timeValue = new Label(TimeConverter.hhmm(timeSlider.getValue()));
+                    timeValue.setFont(Font.font(16));
+                    timeSlider.valueProperty().addListener((observableValue, number, t1) -> {
+                        timeValue.setText(TimeConverter.hhmm(timeSlider.getValue()));
+                        findPath.setTime(timeSlider.getValue());
+                        updateCongestion(timeSlider.getValue());
+                    });
+
                     dragButton.setOnAction(mouseEvent ->{
                         canvas.setOnMouseClicked(null);
                         canvas.setOnMousePressed(presser ->{
@@ -141,11 +166,15 @@ public class MapViewer {
                             });
                         });
                     });
-                    controls.getChildren().addAll(dragButton, findPathButton);
+                    controls.getChildren().addAll(timeValue,timeSlider, tagChoice, findPathButton, travelTimeLabel);
                     tagChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) ->
-                            findPath.setRoadType(tagChoiceNameToIndex.get(t1)));
-                    topToolbar.getChildren().add(tagChoice);
-                    rightSlider.getChildren().addAll(zoomValue, zoomSlider);
+                    {
+                        currentTag = tagChoiceNameToIndex.get(t1);
+                        findPath.setRoadType(currentTag);
+                        updateCongestion(timeSlider.getValue());
+
+                    });
+                    rightSlider.getChildren().addAll(zoomValue, zoomSlider, dragButton);
                     rightSlider.setSpacing(10);
                     rightSlider.setPadding(new Insets(10,10,10,10));
                     rightSlider.setMinWidth(80);
@@ -179,9 +208,16 @@ public class MapViewer {
             graphicalVertices.add(gVertex);
         }
         for (RoadVertex vertex : map.getGraph().getAdjacencyMap().keySet()) {
-            for (RoadEdge edge : map.getGraph().getAdjacencyMap().get(vertex)) {
+           edge: for (RoadEdge edge : map.getGraph().getAdjacencyMap().get(vertex)) {
                 RoadVertex rVertexStart = vertex;
                 RoadVertex rVertexEnd = edge.getDestination();
+                for(GraphicalEdge ge: edgesGraphics){
+                    if(ge.getStart().equals(rVertexStart) && ge.getEnd().equals(rVertexEnd)||
+                        ge.getStart().equals(rVertexEnd) && ge.getEnd().equals(rVertexStart)){
+                        ge.addRoadEdge(edge);
+                        continue edge;
+                    }
+                }
                 Line line = new Line(rVertexStart.posX, rVertexStart.posY, rVertexEnd.posX, rVertexEnd.posY);
                 line.setStrokeWidth(7);
                 GraphicalEdge graphicalEdge = new GraphicalEdge(line, rVertexStart, rVertexEnd);
@@ -192,10 +228,35 @@ public class MapViewer {
         edgesGraphics.forEach(edge -> canvas.getChildren().add(edge.getEdge()));
     }
 
-    private void clearMap(Group canvas){
+    private void clearMap(Group canvas) {
         graphicalVertices.forEach(gv -> canvas.getChildren().remove(gv.getGraphics()));
         edgesGraphics.forEach(edge -> canvas.getChildren().remove(edge));
         graphicalVertices.clear();
         edgesGraphics.clear();
+        Rectangle rect = new Rectangle();
+        rect.setX(-10000);
+        rect.setY(-10000);
+        rect.setWidth(20000);
+        rect.setHeight(20000);
+        rect.setFill(Color.WHITE);
+        canvas.getChildren().add(rect);
+    }
+
+
+    private void updateCongestion(double time){
+        for(GraphicalEdge ge : edgesGraphics){
+            double multiplier = 0;
+            for(RoadEdge re: ge.getRoadEdges()){
+                if(re.getAllowedTag().equals(currentTag)){
+                    if(re.hasCongestion()){
+                        multiplier = re.getCongestionFunction().getMultiplierAtTime(time);
+                        ge.getEdge().setStroke(Color.rgb((int) (
+                                255-255/multiplier),0,0));
+                        break;
+                    }
+                }
+                ge.getEdge().setStroke(Color.BLACK);
+            }
+        }
     }
 }

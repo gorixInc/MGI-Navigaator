@@ -5,6 +5,7 @@ import graph.Graph;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -12,6 +13,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import map.*;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,21 +28,24 @@ public class FindPath implements EventHandler<MouseEvent> {
 
     private List<Circle> routeVertices = new ArrayList<>();
     private List<Line> routeEdges = new ArrayList<>();
-
+    private double time;
     private Integer travellerTag;
+    private Label travelTimeLabel;
 
     public void setRoadType(Integer travellerTag) {
         this.travellerTag = travellerTag;
     }
 
     public FindPath(Group canvas, List<GraphicalVertex> graphicalVertices, List<GraphicalEdge> graphicalEdges,
-                    Dijkstra dijkstra, Integer travellerTag, Graph graph) {
+                    Dijkstra dijkstra, Integer travellerTag, Graph graph, double time, Label travelTimeLabel) {
         this.canvas = canvas;
         this.graphicalVertices = graphicalVertices;
         this.graphicalEdges = graphicalEdges;
         this.dijkstra = dijkstra;
         this.travellerTag = travellerTag;
         this.graph = graph;
+        this.time = time;
+        this.travelTimeLabel = travelTimeLabel;
     }
 
     private boolean first = true;
@@ -62,7 +67,8 @@ public class FindPath implements EventHandler<MouseEvent> {
                 List<RoadVertex> secondVertices = secondClick(point, pointFirst);
                 if (firstVertices.size() == 1) {
                     if (secondVertices.size() == 1) {
-                        Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(0),travellerTag);
+                        Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(0),travellerTag, time
+                        );
                         routes.add(route);
                     } else {
                         for (int i = 0; i < secondVertices.size(); i += 2) {
@@ -74,7 +80,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                                 Route route = new Route(routeVertices, distanceBetweenVertices);
                                 routes.add(route);
                             } else {
-                                Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(i + 1), travellerTag);
+                                Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(0), secondVertices.get(i + 1), travellerTag,time);
                                 List<RoadVertex> routeVertices = route.getPathVertices();
                                 double routeWeight = route.getTotalWeight();
                                 routeVertices.add(secondVertices.get(i));
@@ -88,7 +94,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                 } else {
                     for (int i = 0; i < firstVertices.size(); i += 2) {
                         if (secondVertices.size() == 1) {
-                            Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(0), travellerTag);
+                            Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(0), travellerTag,time);
                             List<RoadVertex> routeVertices = route.getPathVertices();
                             double routeWeight = route.getTotalWeight();
                             routeVertices.add(0, firstVertices.get(i));
@@ -106,7 +112,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                                     Route route = new Route(routeVertices, distanceBetweenVertices);
                                     routes.add(route);
                                 } else {
-                                    Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(j + 1), travellerTag);
+                                    Route route = dijkstra.getRouteWithRestrictions(firstVertices.get(i + 1), secondVertices.get(j + 1), travellerTag,time);
                                     List<RoadVertex> routeVertices = route.getPathVertices();
                                     double routeWeight = route.getTotalWeight();
                                     routeVertices.add(secondVertices.get(j));
@@ -132,6 +138,10 @@ public class FindPath implements EventHandler<MouseEvent> {
                 }
             }
             if (shortestRoute != null) {
+                double travelTimeMins = shortestRoute.getTotalWeight()*60;
+
+                travelTimeLabel.setText("Travel time: "+ TimeConverter.getHoursWithUnit(travelTimeMins) +
+                        TimeConverter.getMinsWithUnit(travelTimeMins));
                 drawPath(shortestRoute, canvas);
             }
         }
@@ -204,15 +214,15 @@ public class FindPath implements EventHandler<MouseEvent> {
         List<RoadVertex> pathVertices = route.getPathVertices();
 
         Circle vertex = new Circle(pathVertices.get(0).posX, pathVertices.get(0).posY, 10);
-        vertex.setFill(Color.RED);
+        vertex.setFill(Color.GREEN);
         this.routeVertices.add(vertex);
         vertex = new Circle(pathVertices.get(pathVertices.size() - 1).posX, pathVertices.get(pathVertices.size() - 1).posY, 10);
-        vertex.setFill(Color.RED);
+        vertex.setFill(Color.GREEN);
         this.routeVertices.add(vertex);
 
         for (int i = 0; i < pathVertices.size() - 1; i++) {
             Line edge = new Line(pathVertices.get(i).posX, pathVertices.get(i).posY, pathVertices.get(i + 1).posX, pathVertices.get(i + 1).posY);
-            edge.setStroke(Color.RED);
+            edge.setStroke(Color.GREEN);
             edge.setStrokeWidth(8);
             routeEdges.add(edge);
         }
@@ -225,5 +235,8 @@ public class FindPath implements EventHandler<MouseEvent> {
         routeEdges.forEach(e -> canvas.getChildren().remove(e));
         routeEdges.clear();
         routeVertices.clear();
+    }
+    public void setTime(double time){
+        this.time =time;
     }
 }

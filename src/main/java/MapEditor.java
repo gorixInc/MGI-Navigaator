@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MapEditor {
-
     List<GraphicalVertex> graphicalVertices = new ArrayList<>();
     List<GraphicalEdge> edgesGraphics = new ArrayList<>();
     Map map;
@@ -176,7 +175,6 @@ public class MapEditor {
         window.setCenter(centerWindow);
         window.setTop(topBar);
         window.setLeft(controls);
-        window.setRight(rightSlider);
 
         centerWindow.getChildren().add(canvas);
 
@@ -202,21 +200,18 @@ public class MapEditor {
             if (file != null) {
                 try {
                     MapFileHandler.saveMap(map, file.toString());
-                } catch (ParserConfigurationException ex) {
-                    ex.printStackTrace();
-                } catch (TransformerException ex) {
-                    ex.printStackTrace();
-                }
+                } catch (ParserConfigurationException | TransformerException ignored) {}
             }
             System.out.println(map);
         });
 
         newFile.setOnAction(e -> {
-            window.setBottom(bottomPanel);
             File file = imageChooser.showOpenDialog(stage);
             if (file != null) {
-                bottomPanel.setVisible(true);
+                window.setBottom(bottomPanel);
+                window.setRight(rightSlider);
                 controls.getChildren().clear();
+                addEdgesButton.setDisable(true);
                 graphicalVertices.clear();
                 edgesGraphics.clear();
                 canvas.getChildren().clear();
@@ -331,11 +326,15 @@ public class MapEditor {
                 error.setText("");
             }
             for(int i = 0; i < numberOfTags; i++){
-
                 if(tagCheckboxes[i].isSelected()){
                     newAllowedTags.add(i);
                     try{
-                        updatedPreset.getMaxSpeed()[i] = Double.parseDouble(tagSpeedEntries[i].getText());
+                        double speed = Double.parseDouble(tagSpeedEntries[i].getText());
+                        if(speed == 0){
+                            tagErrorMessages[i].setText("Speed limit cannot be 0!");
+                            return;
+                        }
+                        updatedPreset.getMaxSpeed()[i] = speed;
                     }catch (Exception e){
                         tagErrorMessages[i].setText("Error in speed field!");
                         return;
@@ -361,6 +360,7 @@ public class MapEditor {
             updatedPreset.setTags(newAllowedTags);
             currentPreset = updatedPreset;
             presetIndexToPreset.put(currentPresetIndex, updatedPreset);
+            addEdgesButton.setDisable(false);
         });
 
         stage.setScene(new Scene(window));

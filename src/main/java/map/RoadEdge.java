@@ -9,6 +9,7 @@ public class RoadEdge{
     private Double timeNoCong;
     private Double timeWithCong;
     private CongestionFunction congestionFunction;
+    private boolean hasCongestion;
 
     public RoadEdge(RoadVertex destination, double pixLength, double scale, double allowedSpeed, Integer allowedTag) {
         this.destination = destination;
@@ -19,7 +20,9 @@ public class RoadEdge{
         this.realLength = pixLength * scale;
         this.timeNoCong = realLength/allowedSpeed;
         this.timeWithCong = timeNoCong;
+        this.hasCongestion = false;
     }
+
 
     public RoadEdge(RoadVertex destination, double pixLength, double scale, double allowedSpeed, Integer allowedTag,
                     CongestionFunction congestionFunction) {
@@ -31,6 +34,7 @@ public class RoadEdge{
         this.realLength = pixLength * scale;
         this.timeNoCong = realLength/allowedSpeed;
         this.timeWithCong = timeNoCong;
+        this.hasCongestion = true;
     }
 
     public void updateScale(Double newScale){
@@ -75,4 +79,8 @@ public class RoadEdge{
     public Double getAllowedSpeed() {
         return allowedSpeed;
     }
+    public boolean hasCongestion() {
+        return hasCongestion;
+    }
+
 }
