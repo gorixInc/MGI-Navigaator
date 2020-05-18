@@ -4,8 +4,8 @@ package map;
 import java.util.List;
 
 public class Route {
-    List<RoadVertex> pathVertices;
-    double totalWeight;
+    final List<RoadVertex> pathVertices;
+    final double totalWeight;
 
     public Route(List pathVertices, double totalWeight){
         this.pathVertices = pathVertices;

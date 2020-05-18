@@ -1,15 +1,15 @@
 package map;
 
 public class RoadEdge{
-    private Integer allowedTag;
-    private RoadVertex destination;
-    private Double pixLength;
+    private final Integer allowedTag;
+    private final RoadVertex destination;
+    private final Double pixLength;
     private Double realLength;
     private Double allowedSpeed;
     private Double timeNoCong;
     private Double timeWithCong;
-    private CongestionFunction congestionFunction;
-    private boolean hasCongestion;
+    private final CongestionFunction congestionFunction;
+    private final boolean hasCongestion;
 
     public RoadEdge(RoadVertex destination, double pixLength, double scale, double allowedSpeed, Integer allowedTag) {
         this.destination = destination;

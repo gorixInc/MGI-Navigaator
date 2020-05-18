@@ -48,7 +48,7 @@ public class MapFileHandler {
     private static void parseForGraph(Document document, Map map) throws Exception {
         Element graph = (Element) document.getElementsByTagName("graph").item(0);
 
-        Double scale = Double.parseDouble(graph.getElementsByTagName("scale").item(0).getTextContent());
+        double scale = Double.parseDouble(graph.getElementsByTagName("scale").item(0).getTextContent());
         map.updateScale(scale);
 
         NodeList vertices = graph.getElementsByTagName("vertex");
@@ -80,11 +80,11 @@ public class MapFileHandler {
                         .item(0).getTextContent());
                 CongestionFunction congestionFunction = new NoCongestion();
                 if(congFuncType ==1){
-                    Double peakTime = Double.parseDouble(congFuncNode.getElementsByTagName("peaktime")
+                    double peakTime = Double.parseDouble(congFuncNode.getElementsByTagName("peaktime")
                             .item(0).getTextContent());
-                    Double minMultiplier = Double.parseDouble(congFuncNode.getElementsByTagName("minmultiplier")
+                    double minMultiplier = Double.parseDouble(congFuncNode.getElementsByTagName("minmultiplier")
                             .item(0).getTextContent());
-                    Double width = Double.parseDouble(congFuncNode.getElementsByTagName("width")
+                    double width = Double.parseDouble(congFuncNode.getElementsByTagName("width")
                             .item(0).getTextContent());
                     congestionFunction = new SinglePeakCongestion(peakTime, minMultiplier, width);
                 }
@@ -193,11 +193,11 @@ public class MapFileHandler {
             Element minMultiplierEl = doc.createElement("minmultiplier");
             Element widthEl = doc.createElement("width");
 
-            peakTimeEl.appendChild(doc.createTextNode(((SinglePeakCongestion) edge.getCongestionFunction())
+            peakTimeEl.appendChild(doc.createTextNode(edge.getCongestionFunction()
                     .getPeak().toString()));
-            minMultiplierEl.appendChild(doc.createTextNode(((SinglePeakCongestion) edge.getCongestionFunction())
+            minMultiplierEl.appendChild(doc.createTextNode(edge.getCongestionFunction()
                     .getMinMultiplier().toString()));
-            widthEl.appendChild(doc.createTextNode(((SinglePeakCongestion) edge.getCongestionFunction())
+            widthEl.appendChild(doc.createTextNode(edge.getCongestionFunction()
                     .getWidth().toString()));
 
             congFuncEl.appendChild(peakTimeEl);

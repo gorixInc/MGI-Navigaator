@@ -9,14 +9,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import map.RoadVertex;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class AddJunction implements EventHandler<MouseEvent> {
 
-    private Group canvas;
-    private List<GraphicalVertex> graphicalVertices;
+    private final Group canvas;
+    private final List<GraphicalVertex> graphicalVertices;
 
     public AddJunction(Group canvas, List<GraphicalVertex> graphicalVertices){
         this.canvas = canvas;

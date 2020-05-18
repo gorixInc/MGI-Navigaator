@@ -3,8 +3,8 @@ package map;
 import graph.Graph;
 
 public class Map {
-    Graph mapGraph;
-    public String name;
+    final Graph mapGraph;
+    public final String name;
     private double scale;
 
     public Map(String name) {

@@ -22,12 +22,11 @@ public class speedLimitChangeListener implements ChangeListener<String>{
         this.roadType = roadType;
     }
 
-    private TextField speedLimit;
-    private Map<Integer, Integer> maxSpeeds;
-    private int index;
+    private final TextField speedLimit;
+    private final Map<Integer, Integer> maxSpeeds;
+    private final int index;
     private int roadType;
-    private int arv;
-    private AddRoad addRoad;
+    private final AddRoad addRoad;
 
     @Override
     public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -35,6 +34,7 @@ public class speedLimitChangeListener implements ChangeListener<String>{
             t1 = t1.replaceAll("[^\\d]", "");
             speedLimit.setText(t1);
         }
+        int arv;
         if (t1.equals("")) {
             arv = 0;
         } else {

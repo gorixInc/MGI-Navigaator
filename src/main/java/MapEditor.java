@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MapEditor {
-    List<GraphicalVertex> graphicalVertices = new ArrayList<>();
-    List<GraphicalEdge> edgesGraphics = new ArrayList<>();
+    final List<GraphicalVertex> graphicalVertices = new ArrayList<>();
+    final List<GraphicalEdge> edgesGraphics = new ArrayList<>();
     Map map;
     UiRoadPreset currentPreset;
 
@@ -93,7 +93,7 @@ public class MapEditor {
         final double entryWidth = 40;
         HBox bottomPanel =  new HBox(padding);
 
-        final Integer numberOfTags = 5;
+        final int numberOfTags = 5;
         VBox roadTagSettingsV = new VBox(padding); //Main for road tags
         CheckBox[] tagCheckboxes = new CheckBox[numberOfTags];
         TextField[] tagSpeedEntries = new TextField[numberOfTags];
@@ -140,7 +140,7 @@ public class MapEditor {
         bottomPanel.setStyle("-fx-background-color: #d4d4d4;");
 
         // bottom panel function
-        final Integer numberOfPresets = 6;
+        final int numberOfPresets = 6;
         HashMap<String, Integer> presetNameToIndex = new HashMap<>();
         HashMap<Integer, UiRoadPreset> presetIndexToPreset = new HashMap<>();
         ObservableList<String> roadPresets = FXCollections.observableArrayList();
@@ -150,7 +150,7 @@ public class MapEditor {
             presetNameToIndex.put(presetName, i);
             presetIndexToPreset.put(i, new UiRoadPreset(numberOfTags));
         }
-        ComboBox roadChoice = new ComboBox(roadPresets);
+        ComboBox<String> roadChoice = new ComboBox<>(roadPresets);
         roadChoice.setValue("Road preset 1");
         bottomPanel.getChildren().addAll(roadTagSettingsV, roadChoice, updatePresetButton);
 
@@ -279,7 +279,7 @@ public class MapEditor {
 
                 twoWay.setOnAction(checboxEvent -> addRoad.updateCheckbox(twoWay.isSelected()));
 
-                roadChoice.valueProperty().addListener((ChangeListener<String>) (observableValue, s, t1) -> {
+                roadChoice.valueProperty().addListener((observableValue, s, t1) -> {
                     int roadPresetIndex = presetNameToIndex.get(t1);
                     currentPreset = presetIndexToPreset.get(roadPresetIndex);
                     addRoad.setCurrentPreset(currentPreset);

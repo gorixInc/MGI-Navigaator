@@ -12,10 +12,10 @@ import java.util.List;
 
 public class AddRoad implements EventHandler<MouseEvent> {
 
-    private Group canvas;
-    private List<GraphicalVertex> graphicalVertices;
-    private Map graph;
-    private List<GraphicalEdge> edgesGraphics;
+    private final Group canvas;
+    private final List<GraphicalVertex> graphicalVertices;
+    private final Map graph;
+    private final List<GraphicalEdge> edgesGraphics;
     private boolean twoWay;
     private int maxSpeed;
     UiRoadPreset currentPreset;

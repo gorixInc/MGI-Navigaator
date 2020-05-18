@@ -9,11 +9,6 @@ import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -35,8 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MapViewer {
-    List<GraphicalVertex> graphicalVertices = new ArrayList<>();
-    List<GraphicalEdge> edgesGraphics = new ArrayList<>();
+    final List<GraphicalVertex> graphicalVertices = new ArrayList<>();
+    final List<GraphicalEdge> edgesGraphics = new ArrayList<>();
     Map map;
     Integer currentTag = 0;
 
@@ -202,25 +197,23 @@ public class MapViewer {
 
     private void readMap(Map map, Group canvas) {
         for (RoadVertex vertex : map.getGraph().getVertices()) {
-            RoadVertex rVertex = vertex;
-            Circle circle = new Circle(rVertex.posX, rVertex.posY, 9);
-            GraphicalVertex gVertex = new GraphicalVertex(rVertex, circle);
+            Circle circle = new Circle(vertex.posX, vertex.posY, 9);
+            GraphicalVertex gVertex = new GraphicalVertex(vertex, circle);
             graphicalVertices.add(gVertex);
         }
         for (RoadVertex vertex : map.getGraph().getAdjacencyMap().keySet()) {
            edge: for (RoadEdge edge : map.getGraph().getAdjacencyMap().get(vertex)) {
-                RoadVertex rVertexStart = vertex;
-                RoadVertex rVertexEnd = edge.getDestination();
+               RoadVertex rVertexEnd = edge.getDestination();
                 for(GraphicalEdge ge: edgesGraphics){
-                    if(ge.getStart().equals(rVertexStart) && ge.getEnd().equals(rVertexEnd)||
-                        ge.getStart().equals(rVertexEnd) && ge.getEnd().equals(rVertexStart)){
+                    if(ge.getStart().equals(vertex) && ge.getEnd().equals(rVertexEnd)||
+                        ge.getStart().equals(rVertexEnd) && ge.getEnd().equals(vertex)){
                         ge.addRoadEdge(edge);
                         continue edge;
                     }
                 }
-                Line line = new Line(rVertexStart.posX, rVertexStart.posY, rVertexEnd.posX, rVertexEnd.posY);
+                Line line = new Line(vertex.posX, vertex.posY, rVertexEnd.posX, rVertexEnd.posY);
                 line.setStrokeWidth(7);
-                GraphicalEdge graphicalEdge = new GraphicalEdge(line, rVertexStart, rVertexEnd);
+                GraphicalEdge graphicalEdge = new GraphicalEdge(line, vertex, rVertexEnd);
                 edgesGraphics.add(graphicalEdge);
             }
         }

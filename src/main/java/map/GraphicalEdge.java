@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GraphicalEdge {
-    private Line edge;
-    private RoadVertex start;
-    private RoadVertex end;
-    private List<RoadEdge> roadEdges;
+    private final Line edge;
+    private final RoadVertex start;
+    private final RoadVertex end;
+    private final List<RoadEdge> roadEdges;
 
     public GraphicalEdge(Line edge, RoadVertex start, RoadVertex end) {
         this.edge = edge;

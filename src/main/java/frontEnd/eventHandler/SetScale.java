@@ -1,5 +1,4 @@
 package frontEnd.eventHandler;
-import com.sun.prism.paint.Paint;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Line;
@@ -8,11 +7,11 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 
 public class SetScale implements EventHandler<MouseEvent> {
-    private Group canvas;
-    private Map map;
+    private final Group canvas;
+    private final Map map;
     double rlDistance;
-    private Scale sp;
-    private Label infoLabel;
+    private final Scale sp;
+    private final Label infoLabel;
 
     public SetScale(Group canvas, Map map, Label infoLabel) {
         this.canvas = canvas;
@@ -48,9 +47,9 @@ public class SetScale implements EventHandler<MouseEvent> {
         }
     }
 
-    private class Scale {
-        double[] x;
-        double[] y;
+    private static class Scale {
+        final double[] x;
+        final double[] y;
         boolean gotFirst;
         Line lineGraphics;
 

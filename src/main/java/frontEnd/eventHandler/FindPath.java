@@ -13,24 +13,22 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import map.*;
 
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class FindPath implements EventHandler<MouseEvent> {
 
-    private Group canvas;
-    private List<GraphicalVertex> graphicalVertices;
-    private Dijkstra dijkstra;
-    private List<GraphicalEdge> graphicalEdges;
-    private Graph graph;
+    private final Group canvas;
+    private final List<GraphicalVertex> graphicalVertices;
+    private final Dijkstra dijkstra;
+    private final List<GraphicalEdge> graphicalEdges;
+    private final Graph graph;
 
-    private List<Circle> routeVertices = new ArrayList<>();
-    private List<Line> routeEdges = new ArrayList<>();
+    private final List<Circle> routeVertices = new ArrayList<>();
+    private final List<Line> routeEdges = new ArrayList<>();
     private double time;
     private Integer travellerTag;
-    private Label travelTimeLabel;
+    private final Label travelTimeLabel;
 
     public void setRoadType(Integer travellerTag) {
         this.travellerTag = travellerTag;
@@ -166,7 +164,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                             RoadVertex newVertex = new RoadVertex(-1, point.getX(), point.getY());
                             firstVertices.add(newVertex);
                             firstVertices.add(graphicalEdge.getStart());
-                            break loop;
+                            break;
                         }
                     }
                 }
@@ -199,7 +197,7 @@ public class FindPath implements EventHandler<MouseEvent> {
                                 newVertex = new RoadVertex(-1, pointFirst.getX(), pointFirst.getY());
                                 secondVertices.add(newVertex);
                             }
-                            break loop;
+                            break;
                         }
                     }
                 }

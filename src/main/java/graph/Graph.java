@@ -9,9 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Graph {
-    private HashMap<RoadVertex, LinkedList<RoadEdge>> adjacencyMap;
-    private List<RoadVertex> vertices;
-    private List<RoadEdge> allEdges;
+    private final HashMap<RoadVertex, LinkedList<RoadEdge>> adjacencyMap;
+    private final List<RoadVertex> vertices;
+    private final List<RoadEdge> allEdges;
     public Graph(){
         allEdges = new ArrayList<>();
         this.adjacencyMap = new HashMap<>();

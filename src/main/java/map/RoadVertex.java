@@ -7,9 +7,9 @@ import java.util.Objects;
  * Contains coordinate data for each vertex;
  */
 public class RoadVertex{
-    public Double posX;
-    public Double posY;
-    public Integer index;
+    public final Double posX;
+    public final Double posY;
+    public final Integer index;
 
 
     public RoadVertex(int index, double x, double y) {

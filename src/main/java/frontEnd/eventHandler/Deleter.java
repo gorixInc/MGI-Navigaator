@@ -15,10 +15,10 @@ import java.util.List;
 
 public class Deleter implements EventHandler<MouseEvent> {
 
-    private List<GraphicalVertex> graphicalVertices;
-    private List<GraphicalEdge> edgesGraphics;
-    private Map graph;
-    private Group canvas;
+    private final List<GraphicalVertex> graphicalVertices;
+    private final List<GraphicalEdge> edgesGraphics;
+    private final Map graph;
+    private final Group canvas;
 
     public Deleter(List<GraphicalVertex> graphicalVertices, List<GraphicalEdge> edgesGraphics, Map graph, Group canvas) {
         this.graphicalVertices = graphicalVertices;

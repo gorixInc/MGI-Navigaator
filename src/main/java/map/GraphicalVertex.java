@@ -3,8 +3,8 @@ package map;
 import javafx.scene.shape.Circle;
 
 public class GraphicalVertex{
-    private Circle graphics;
-    private RoadVertex roadVertex;
+    private final Circle graphics;
+    private final RoadVertex roadVertex;
 
     public GraphicalVertex(RoadVertex rVertex, Circle graphics){
         this.roadVertex = rVertex;

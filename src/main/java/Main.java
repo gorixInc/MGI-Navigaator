@@ -1,9 +1,3 @@
-import java.io.IOException;
-import java.util.ArrayList;
-
-import map.*;
-import graph.*;
-
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;

@@ -8,7 +8,7 @@ import map.Route;
 import java.util.*;
 
 public class Dijkstra {
-    Graph graph;
+    final Graph graph;
     private HashMap<RoadVertex, LinkedList<RoadEdge>> adjacencyMap;
     private HashMap<RoadVertex, PrevVertexAndDistance> prevVertexAndDistanceTable;
     private List<RoadVertex> path;
@@ -55,7 +55,7 @@ public class Dijkstra {
      * Creates a Route object that represents a path between origin and destination vertices.
      * The route is created using only roads whose tags intersect with tags in allowed;
      * @param origin Origin vertex
-     * @param destination Destination veretx
+     * @param destination Destination vertex
      * @param allowed tags, which roads can we use?
      * @return
      */
@@ -77,7 +77,7 @@ public class Dijkstra {
      * The route is created using only roads whose tags intersect with tags in allowed;
      * Congestion is considered when choosing the route.
      * @param origin Origin vertex
-     * @param destination Destination veretx
+     * @param destination Destination vertex
      * @param allowed tags, which roads can we use?
      * @param startTime Staring time of the route in minutes since midnight
      * @return
@@ -197,7 +197,7 @@ public class Dijkstra {
      * Compares vertices by the shortest distance from origin vertex in prevVertexAndDistance HashMap;
      */
     private static class EdgeComparator implements Comparator<RoadVertex> {
-        private HashMap<RoadVertex, PrevVertexAndDistance> prevVertexAndDistanceTable;
+        private final HashMap<RoadVertex, PrevVertexAndDistance> prevVertexAndDistanceTable;
         EdgeComparator(HashMap<RoadVertex, PrevVertexAndDistance> prevVertexAndDistanceTable){
             this.prevVertexAndDistanceTable = prevVertexAndDistanceTable;
         }
@@ -211,8 +211,8 @@ public class Dijkstra {
     }
 
     private static class PrevVertexAndDistance{
-        RoadVertex prevVertex;
-        double totalWeight;
+        final RoadVertex prevVertex;
+        final double totalWeight;
         public PrevVertexAndDistance(RoadVertex prevVertex, double totalDistance) {
             this.prevVertex = prevVertex;
             this.totalWeight = totalDistance;
